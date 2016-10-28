@@ -14,11 +14,19 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Pushing MapsFragment
-        MapsFragment fragment = new MapsFragment();
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.activity_main, fragment);
-        ft.commit();
+        if(findViewById(R.id.Maps_fragment_container) != null){
+            if(savedInstanceState != null){
+                return;
+            }
+
+            // Pushing MapsFragment
+            MapsFragment mapsFragment = new MapsFragment();
+            mapsFragment.setArguments(getIntent().getExtras());
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.Maps_fragment_container, mapsFragment).commit();
+        }
+
     }
 
     @Override
