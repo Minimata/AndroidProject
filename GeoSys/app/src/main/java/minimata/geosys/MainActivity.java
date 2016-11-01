@@ -7,7 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-public class MainActivity extends AppCompatActivity implements MapsFragment.OnFragmentInteractionListener {
+import minimata.geosys.dummy.DummyContent;
+
+public class MainActivity extends AppCompatActivity implements
+        MapsFragment.OnFragmentInteractionListener,
+        SettingFragment.OnListFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,16 +25,26 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnFr
 
             // Pushing MapsFragment
             MapsFragment mapsFragment = new MapsFragment();
-            mapsFragment.setArguments(getIntent().getExtras());
-
+//            mapsFragment.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.Maps_fragment_container, mapsFragment).commit();
+
+            SettingFragment settingFragment = new SettingFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.Setting_fragment_container, settingFragment).commit();
+
+
         }
 
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem dummyItem) {
 
     }
 }

@@ -31,9 +31,8 @@
         android:layout_weight="1"
         android:background="#5050ff">
 
-        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/TextView"
-            android:text="Other fragment hey"
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/Setting_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
