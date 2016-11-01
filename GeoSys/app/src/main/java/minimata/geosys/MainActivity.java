@@ -45,6 +45,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem dummyItem) {
-
+        Log.d("d", dummyItem.content);
     }
 }
