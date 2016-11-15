@@ -42,12 +42,8 @@ public class MainActivity extends AppCompatActivity implements
             //Alarm selection bottom sheet
             View bottomSheet = findViewById(R.id.bottom_sheet);
             final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
-            bottomSheet.post(new Runnable() {
-                @Override
-                public void run() {
-                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
-            });
+            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
             behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
                 @Override
                 public void onStateChanged(@NonNull View bottomSheet, int newState) {
