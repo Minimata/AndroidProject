@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 
 import minimata.geosys.dummy.DummyContent;
+
+import static android.R.drawable.*;
 
 public class MainActivity extends AppCompatActivity implements
         MapsFragment.OnFragmentInteractionListener,
@@ -27,27 +30,40 @@ public class MainActivity extends AppCompatActivity implements
             if (savedInstanceState != null) {
                 return;
             }
-
-            // Pushing MapsFragment
-            MapsFragment mapsFragment = new MapsFragment();
-            //mapsFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.Maps_fragment_container, mapsFragment).commit();
-
-            //Settings Fragment
-            SettingFragment settingFragment = new SettingFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.Setting_fragment_container, settingFragment).commit();
-
+            //New alarm button
+            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
             //Alarm selection bottom sheet
             View bottomSheet = findViewById(R.id.bottom_sheet);
+            //Bottom sheet behaviour
             final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
-            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int height = metrics.heightPixels;
+            bottomSheet.getLayoutParams().height = height / 2;
             behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
                 @Override
                 public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                    // React to state change
+                    switch (newState){
+                        case BottomSheetBehavior.STATE_HIDDEN:
+                            //reset settings
+                            fab.setImageResource(ic_input_add);
+                            break;
+
+                        case BottomSheetBehavior.STATE_EXPANDED:
+                            //show settings
+                            fab.setImageResource(ic_delete);
+                            break;
+
+                        case BottomSheetBehavior.STATE_COLLAPSED:
+                            //keep settings
+                            fab.setImageResource(ic_delete);
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
 
                 @Override
@@ -56,26 +72,44 @@ public class MainActivity extends AppCompatActivity implements
                 }
             });
 
-            //New alarm button
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            //Action button behaviour
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     switch (behavior.getState()){
-                        case BottomSheetBehavior.STATE_COLLAPSED:
+                        case BottomSheetBehavior.STATE_EXPANDED:
+                            //delete settings
+                            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                            break;
+
+                        case BottomSheetBehavior.STATE_HIDDEN:
+                            //show new settings
                             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                             break;
 
-                        case BottomSheetBehavior.STATE_EXPANDED:
-                            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        case BottomSheetBehavior.STATE_COLLAPSED:
+                            //delete settings
+                            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                             break;
 
                         default:
-                            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                             break;
                     }
                 }
             });
+
+
+            //Fragments
+            // Pushing MapsFragment
+            MapsFragment mapsFragment = new MapsFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.Maps_fragment_container, mapsFragment).commit();
+
+            //Settings Fragment
+            SettingFragment settingFragment = new SettingFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.Setting_fragment_container, settingFragment).commit();
         }
     }
 

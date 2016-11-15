@@ -6,11 +6,6 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <!--<ScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
-
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
@@ -29,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="#ff5050">
+                android:background="@android:color/holo_red_dark">
 
                 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/Maps_fragment_container"
@@ -42,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="#5050ff">
+                android:background="@android:color/holo_green_dark">
 
                 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/Setting_fragment_container"
@@ -52,15 +47,15 @@
 
         </LinearLayout>
 
-     <!--</ScrollView>-->
-
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="@android:color/holo_orange_light"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/holo_orange_dark"
         android:clipToPadding="true"
         app:behavior_hideable="true"
+        app:behavior_peekHeight="50dp"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
         <TextView
@@ -78,6 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+        app:backgroundTint="@android:color/holo_blue_dark"
         app:srcCompat="@android:drawable/ic_input_add" />
 
 </android.support.design.widget.CoordinatorLayout>
