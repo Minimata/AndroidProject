@@ -42,8 +42,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLng position;
-    private LocationListener locationListener;
-    private LocationManager locationManager;
+//    private LocationListener locationListener;
+//    private LocationManager locationManager;
 
     private OnFragmentInteractionListener mListener;
 
@@ -81,7 +81,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void updateLocation(Location location) {
+    public void updateLocation(Location location) {
         Log.d("d", "changed location from updateLocation DUDE CHECK IT OUT HERE!!"); //for debug
         position = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.clear();
@@ -116,45 +116,46 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
-            initializeLocationEngine();
+//            initializeLocationEngine();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
 
-    private void initializeLocationEngine() {
-        locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
-                updateLocation(location);
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            public void onProviderEnabled(String provider) {
-            }
-
-            public void onProviderDisabled(String provider) {
-            }
-        };
-        this.locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        Runnable geolocation = new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                try {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                } catch (SecurityException e) {
-                    Log.d("d", "changed location from geoloc thread DUDE CHECK IT OUT HERE!!");
-                    Log.d("d", e.getMessage());
-                }
-
-            }
-        };
-        new Thread(geolocation).start();
-    }
+//    private void initializeLocationEngine() {
+//        locationListener = new LocationListener() {
+//            public void onLocationChanged(Location location) {
+//                // Called when a new location is found by the network location provider.
+//                updateLocation(location);
+//                Log.d("Location error", "location listener actually working.");
+//            }
+//
+//            public void onStatusChanged(String provider, int status, Bundle extras) {
+//            }
+//
+//            public void onProviderEnabled(String provider) {
+//            }
+//
+//            public void onProviderDisabled(String provider) {
+//            }
+//        };
+//        this.locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+//        Runnable geolocation = new Runnable() {
+//            @Override
+//            public void run() {
+//                Looper.prepare();
+//                try {
+//                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+//                } catch (SecurityException e) {
+//                    Log.d("d", "changed location from geoloc thread DUDE CHECK IT OUT HERE!!");
+//                    Log.d("d", e.getMessage());
+//                }
+//
+//            }
+//        };
+//        new Thread(geolocation).start();
+//    }
 
     @Override
     public void onDetach() {
