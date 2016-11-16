@@ -40,4 +40,4 @@ captures/
 *.jks
 
 # Ignoring googlemaps API key file
-google_maps_api.xml
+D:\He-ARC\INF3dlm-a\Android\Project\AndroidProject\GeoSys\app\src\main\res\values\google_maps_api.xml
