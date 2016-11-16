@@ -1,5 +1,8 @@
 package minimata.geosys;
 
+import android.Manifest;
+import android.content.Context;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +16,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 
+import java.io.Serializable;
+
 import minimata.geosys.dummy.DummyContent;
 
 import static android.R.drawable.*;
@@ -21,9 +26,14 @@ public class MainActivity extends AppCompatActivity implements
         MapsFragment.OnFragmentInteractionListener,
         SettingFragment.OnListFragmentInteractionListener {
 
+    private LocationManager locationManager;
+    private static final String[] INITIAL_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestPermissions(INITIAL_PERMS,1);
         setContentView(R.layout.activity_main);
 
         if (findViewById(R.id.Maps_fragment_container) != null) {
@@ -102,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements
 
             //Fragments
             // Pushing MapsFragment
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
             MapsFragment mapsFragment = new MapsFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.Maps_fragment_container, mapsFragment).commit();

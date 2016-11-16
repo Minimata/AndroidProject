@@ -1,13 +1,26 @@
 package minimata.geosys;
 
+import android.app.Activity;
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.cast.LaunchOptions;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,7 +30,7 @@ import android.view.ViewGroup;
  * Use the {@link MapsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -27,10 +40,17 @@ public class MapsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private GoogleMap mMap;
+    private LatLng position;
+    private LocationListener locationListener;
+    private LocationManager locationManager;
+
     private OnFragmentInteractionListener mListener;
 
     public MapsFragment() {
         // Required empty public constructor
+
+
     }
 
     /**
@@ -57,7 +77,24 @@ public class MapsFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
+    }
+
+    private void updateLocation(Location location) {
+        Log.d("d", "changed location from updateLocation DUDE CHECK IT OUT HERE!!"); //for debug
+        position = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.clear();
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+        mMap.addMarker(new MarkerOptions().position(position).title("You are here."));
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        position = new LatLng(46.997455, 6.938350);
+        mMap.addMarker(new MarkerOptions().position(position).title("You are here."));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
     @Override
@@ -79,10 +116,44 @@ public class MapsFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
+            initializeLocationEngine();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    private void initializeLocationEngine() {
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                updateLocation(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+        this.locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        Runnable geolocation = new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                try {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                } catch (SecurityException e) {
+                    Log.d("d", "changed location from geoloc thread DUDE CHECK IT OUT HERE!!");
+                    Log.d("d", e.getMessage());
+                }
+
+            }
+        };
+        new Thread(geolocation).start();
     }
 
     @Override
