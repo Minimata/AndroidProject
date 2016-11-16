@@ -2,9 +2,12 @@ package minimata.geosys;
 
 import android.Manifest;
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.util.DisplayMetrics;
@@ -27,7 +30,9 @@ public class MainActivity extends AppCompatActivity implements
         SettingFragment.OnListFragmentInteractionListener,
         TypeFragment.OnListFragmentInteractionListener {
 
+    private LocationListener locationListener;
     private LocationManager locationManager;
+    private MapsFragment mapsFragment = new MapsFragment();
     private static final String[] INITIAL_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION
     };
@@ -51,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements
 
             // Pushing MapsFragment
             locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            MapsFragment mapsFragment = new MapsFragment();
+            initializeLocationEngine();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.Maps_fragment_container, mapsFragment).commit();
 
@@ -127,6 +132,43 @@ public class MainActivity extends AppCompatActivity implements
                 }
             });
         }
+    }
+
+    private void initializeLocationEngine() {
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                mapsFragment.updateLocation(location);
+                Log.d("Location error", "location listener actually working.");
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                Log.d("Location error", "on status change called.");
+            }
+
+            public void onProviderEnabled(String provider) {
+                Log.d("Location error", "on provider enabled called.");
+            }
+
+            public void onProviderDisabled(String provider) {
+                Log.d("Location error", "on provider disabled called.");
+            }
+        };
+        Runnable geolocation = new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                try {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                } catch (SecurityException e) {
+                    Log.d("d", "changed location from geoloc thread");
+                    Log.d("d", e.getMessage());
+                }
+
+            }
+        };
+        new Thread(geolocation).start();
     }
 
     @Override
