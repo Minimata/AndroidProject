@@ -24,7 +24,8 @@ import static android.R.drawable.*;
 
 public class MainActivity extends AppCompatActivity implements
         MapsFragment.OnFragmentInteractionListener,
-        SettingFragment.OnListFragmentInteractionListener {
+        SettingFragment.OnListFragmentInteractionListener,
+        TypeFragment.OnListFragmentInteractionListener {
 
     private LocationManager locationManager;
     private static final String[] INITIAL_PERMS={
@@ -46,6 +47,23 @@ public class MainActivity extends AppCompatActivity implements
             View bottomSheet = findViewById(R.id.bottom_sheet);
             //Bottom sheet behaviour
             final BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+
+
+            // Pushing MapsFragment
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            MapsFragment mapsFragment = new MapsFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.Maps_fragment_container, mapsFragment).commit();
+
+            //Settings Fragment
+            SettingFragment settingFragment = new SettingFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.Setting_fragment_container, settingFragment).commit();
+
+            //Type of alarms / settings fragment
+            TypeFragment typeFragment = new TypeFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.Type_fragment_container, typeFragment).commit();
 
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             DisplayMetrics metrics = new DisplayMetrics();
@@ -108,19 +126,6 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
             });
-
-
-            //Fragments
-            // Pushing MapsFragment
-            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            MapsFragment mapsFragment = new MapsFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.Maps_fragment_container, mapsFragment).commit();
-
-            //Settings Fragment
-            SettingFragment settingFragment = new SettingFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.Setting_fragment_container, settingFragment).commit();
         }
     }
 
