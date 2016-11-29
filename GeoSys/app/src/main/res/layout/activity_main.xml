@@ -26,10 +26,11 @@
                 android:layout_weight="1"
                 android:background="@android:color/holo_red_dark">
 
-                <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/Maps_fragment_container"
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:name="minimata.geosys.GoogleMapFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:id="@+id/fragment_googlemap" />
 
             </LinearLayout>
 
@@ -39,10 +40,12 @@
                 android:layout_weight="1"
                 android:background="@android:color/holo_green_dark">
 
-                <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/Setting_fragment_container"
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:name="minimata.geosys.SettingFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:id="@+id/fragment_settings" />
+
             </LinearLayout>
 
         </LinearLayout>
@@ -65,10 +68,11 @@
             android:text="Setting"
             android:background="@android:color/darker_gray"/>
 
-        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/Type_fragment_container"
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            android:name="minimata.geosys.TypeFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:id="@+id/fragment_alarm" />
 
     </LinearLayout>
 
