@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
             // Pushing MapsFragment
-            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
             initializeLocationEngine();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.Maps_fragment_container, mapsFragment).commit();
@@ -135,11 +135,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void initializeLocationEngine() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 mapsFragment.updateLocation(location);
-                Log.d("Location error", "location listener actually working.");
+                Log.d("Location", "location listener actually working.");
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -162,8 +163,8 @@ public class MainActivity extends AppCompatActivity implements
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
                 } catch (SecurityException e) {
-                    Log.d("d", "changed location from geoloc thread");
-                    Log.d("d", e.getMessage());
+                    Log.e("e", "changed location from geoloc thread failed");
+                    Log.e("e", e.getMessage());
                 }
 
             }
@@ -178,8 +179,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem dummyItem) {
-        View view = findViewById(R.id.activity_main);
-        Snackbar.make(view, dummyItem.content, Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+//        View view = findViewById(R.id.activity_main);
+//        Snackbar.make(view, dummyItem.content, Snackbar.LENGTH_LONG)
+//                .setAction("Action", null).show();
     }
 }
