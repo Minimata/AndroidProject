@@ -25,7 +25,8 @@ import static android.R.drawable.*;
 public class MainActivity extends AppCompatActivity implements
         MapsFragment.OnFragmentInteractionListener,
         SettingFragment.OnListFragmentInteractionListener,
-        TypeFragment.OnListFragmentInteractionListener {
+        TypeFragment.OnListFragmentInteractionListener,
+        AlarmFragment.OnListFragmentInteractionListener {
 
     private LocationManager locationManager;
     private static final String[] INITIAL_PERMS={
@@ -55,21 +56,27 @@ public class MainActivity extends AppCompatActivity implements
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.Maps_fragment_container, mapsFragment).commit();
 
-            //Settings Fragment
-            SettingFragment settingFragment = new SettingFragment();
+            //Alarms Fragment
+            AlarmFragment alarmFragment = new AlarmFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.Setting_fragment_container, settingFragment).commit();
+                    .add(R.id.Alarm_fragment_container, alarmFragment).commit();
 
+
+            //The next 2 fragments will interchange in the bottomsheet.
             //Type of alarms / settings fragment
             TypeFragment typeFragment = new TypeFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.Type_fragment_container, typeFragment).commit();
 
+            SettingFragment settingFragment = new SettingFragment();
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.Type_fragment_container, typeFragment).commit();
+
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             DisplayMetrics metrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(metrics);
             int height = metrics.heightPixels;
-            bottomSheet.getLayoutParams().height = height / 2;
+            bottomSheet.getLayoutParams().height = (height - 100) / 2;
             behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
                 @Override
                 public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -136,8 +143,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem dummyItem) {
-        View view = findViewById(R.id.activity_main);
-        Snackbar.make(view, dummyItem.content, Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+//        View view = findViewById(R.id.activity_main);
+//        Snackbar.make(view, dummyItem.content, Snackbar.LENGTH_LONG)
+//                .setAction("Action", null).show();
     }
 }
