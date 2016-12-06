@@ -56,8 +56,13 @@ public class MainActivity extends AppCompatActivity implements
                         fab.setImageResource(ic_input_add);
                         break;
 
-                    .add(R.id.Setting_fragment_container, settingFragment).commit();
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        fab.setImageResource(ic_delete);
+                        break;
 
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        fab.setImageResource(ic_delete);
+                        break;
                 }
             }
 
