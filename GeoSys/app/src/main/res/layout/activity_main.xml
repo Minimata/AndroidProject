@@ -15,10 +15,6 @@
             android:orientation="vertical"
             android:weightSum="2"
             tools:context="minimata.geosys.MainActivity">
-            <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
-            <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
-            <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
-            <!--android:paddingTop="@dimen/activity_vertical_margin"-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,13 +37,12 @@
                 android:background="@android:color/holo_green_dark">
 
                 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:name="minimata.geosys.SettingFragment"
+                    android:name="minimata.geosys.AlarmFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/fragment_settings" />
+                    android:id="@+id/fragment_alarms" />
 
             </LinearLayout>
-
         </LinearLayout>
 
     <LinearLayout

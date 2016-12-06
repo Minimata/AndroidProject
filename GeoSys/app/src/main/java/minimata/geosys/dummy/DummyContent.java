@@ -21,38 +21,27 @@ public class DummyContent {
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+    private final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
 
     protected void addItem(DummyItem item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }
 
-    protected DummyItem createDummyItem(int id, String description) {
-        return new DummyItem(String.valueOf(id), description, description);
-    }
-
-    protected String makeDetails(int position) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
-        return builder.toString();
+    protected DummyItem createItem(int id, String description) {
+        return new DummyItem(String.valueOf(id), description);
     }
 
     /**
      * A dummy item representing a piece of content.
      */
-    public static class DummyItem {
+    public class DummyItem {
         public final String id;
         public final String content;
-        public final String details;
 
-        public DummyItem(String id, String content, String details) {
+        public DummyItem(String id, String content) {
             this.id = id;
             this.content = content;
-            this.details = details;
         }
 
         @Override

@@ -1,6 +1,7 @@
 package minimata.geosys;
 
 import android.Manifest;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,9 +9,17 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import java.util.*;
+import java.io.*;
 
+import java.util.Map;
+
+import minimata.geosys.dummy.Alarms;
 import minimata.geosys.dummy.DummyContent;
+import minimata.geosys.dummy.Settings;
+import minimata.geosys.dummy.Types;
 
 import static android.R.drawable.ic_delete;
 import static android.R.drawable.ic_input_add;
@@ -20,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements
         SettingFragment.OnListFragmentInteractionListener,
         TypeFragment.OnListFragmentInteractionListener,
         AlarmFragment.OnListFragmentInteractionListener {
+
+    private String filename = "saves";
 
     private static final String[] INITIAL_PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION
@@ -107,9 +118,47 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem dummyItem) {
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+        if(item.getClass() == Alarms.AlarmItem.class) {
+            //open settingsFragment to edit an already existing alarm
+            Log.d("d", "ALARM ITEM CLICKED");
+        }
+        if(item.getClass() == Types.TypeItem.class) {
+            //open settings fragment to create a new alarm
+            Log.d("d", "TYPE ITEM CLICKED");
+        }
+        if(item.getClass() == Settings.SettingItem.class) {
+            //creates an event depending of the type of setting (position, radius, melody, save button, etc)
+            Log.d("d", "SETTING ITEM CLICKED");
+        }
 //        View view = findViewById(R.id.activity_main);
 //        Snackbar.make(view, dummyItem.content, Snackbar.LENGTH_LONG)
 //                .setAction("Action", null).show();
+    }
+
+    public void SaveToFile(Map map) {
+        try
+        {
+            FileOutputStream fos = new FileOutputStream(filename);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(map);
+            oos.flush();
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Map ReadFromFile() {
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(filename);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            return (Map)objectInputStream.readObject();
+        }
+        catch(ClassNotFoundException | IOException | ClassCastException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
