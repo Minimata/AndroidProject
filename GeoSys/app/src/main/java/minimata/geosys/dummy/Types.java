@@ -9,7 +9,7 @@ package minimata.geosys.dummy;
 
 public class Types extends DummyContent {
     public Types(){
-        addItem(createItem(1, "An Alarm to wake up."));
+        addItem(createItem(idCount++, "An Alarm to wake up."));
     }
 
     @Override

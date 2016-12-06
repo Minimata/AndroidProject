@@ -9,9 +9,9 @@ package minimata.geosys.dummy;
 public class Settings extends DummyContent {
     public Settings() {
         // Add some sample items.
-        addItem(createItem(0, "Slider km setting"));
+        addItem(createItem(idCount++, "Slider km setting"));
         for (int i = 1; i <= 8; i++) {
-            addItem(createItem(i, "A Setting"));
+            addItem(createItem(idCount++, "A Setting"));
         }
     }
 

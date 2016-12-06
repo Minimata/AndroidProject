@@ -11,7 +11,7 @@ public class Alarms extends DummyContent {
     public Alarms(){
         // Add some sample items.
         for (int i = 1; i <= 3; i++) {
-            addItem(createItem(i, "An alarm"));
+            addItem(createItem(idCount++, "An alarm"));
         }
     }
 

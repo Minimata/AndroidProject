@@ -61,6 +61,7 @@ public class AlarmFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_alarm_list, container, false);
         Alarms alarm = new Alarms();
+        Bundle args = this.getArguments();
 
         // Set the adapter
         if (view instanceof RecyclerView) {

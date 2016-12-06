@@ -1,7 +1,6 @@
 package minimata.geosys;
 
 import android.Manifest;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import java.util.*;
 import java.io.*;
 
 import java.util.Map;
@@ -121,9 +119,10 @@ public class MainActivity extends AppCompatActivity implements
         transaction.commit();
     }
 
-    private void replaceFragment(Fragment fragment) {
+    private void replaceFragment(Fragment fragment, Bundle args) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
+        fragment.setArguments(args);
         transaction.replace(R.id.fragment_type_settings, fragment); // f2_container is your FrameLayout container
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
@@ -139,25 +138,22 @@ public class MainActivity extends AppCompatActivity implements
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
         if(item.getClass() == Alarms.AlarmItem.class) {
             //open settingsFragment to edit an already existing alarm
-            replaceFragment(new SettingFragment());
+            Bundle args = new Bundle();
+            replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            Log.d("d", "ALARM ITEM CLICKED");
         }
         if(item.getClass() == Types.TypeItem.class) {
             //open settings fragment to create a new alarm
-            replaceFragment(new SettingFragment());
+            Bundle args = new Bundle();
+            replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            Log.d("d", "TYPE ITEM CLICKED");
         }
         if(item.getClass() == Settings.SettingItem.class) {
             //creates an event depending of the type of setting (position, radius, melody, save button, etc)
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            replaceFragment(new TypeFragment());
-            Log.d("d", "SETTING ITEM CLICKED");
+            Bundle args = new Bundle();
+            replaceFragment(new TypeFragment(), args);
         }
-//        View view = findViewById(R.id.activity_main);
-//        Snackbar.make(view, dummyItem.content, Snackbar.LENGTH_LONG)
-//                .setAction("Action", null).show();
     }
 
     public void SaveToFile(Map map) {

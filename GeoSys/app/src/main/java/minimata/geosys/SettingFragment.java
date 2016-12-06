@@ -62,6 +62,7 @@ public class SettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setting_list, container, false);
         Settings setting = new Settings();
+        Bundle args = this.getArguments();
 
         // Set the adapter
         if (view instanceof RecyclerView) {
