@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle args = new Bundle();
+                replaceFragment(new TypeFragment(), args);
                 switch (behavior.getState()) {
                     case BottomSheetBehavior.STATE_EXPANDED:
                         //delete settings
@@ -112,10 +114,16 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        Bundle args = new Bundle();
+        addFragment(new AlarmFragment(), args, R.id.fragment_alarms);
+        addFragment(new TypeFragment(), args, R.id.fragment_type_settings);
+    }
 
+    private void addFragment(Fragment fragment, Bundle args, int id) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.add(R.id.fragment_type_settings, new TypeFragment());
+        fragment.setArguments(args);
+        transaction.add(id, fragment);
         transaction.commit();
     }
 
@@ -148,8 +156,9 @@ public class MainActivity extends AppCompatActivity implements
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
-        if(item.getClass() == Settings.SettingItem.class) {
-            //creates an event depending of the type of setting (position, radius, melody, save button, etc)
+        if(item.getClass() == Settings.OKButton.class) {
+            //creates an event depending of the type of setting (position, radius, tune, save button, etc)
+            Log.d("d", "CSBINAFBNADFBNOADKFNBKADFNB");
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Bundle args = new Bundle();
             replaceFragment(new TypeFragment(), args);

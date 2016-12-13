@@ -6,16 +6,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import minimata.geosys.dummy.DummyContent;
-import minimata.geosys.dummy.DummyContent.DummyItem;
 import minimata.geosys.dummy.Settings;
-
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -61,8 +58,7 @@ public class SettingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setting_list, container, false);
-        Settings setting = new Settings();
-        Bundle args = this.getArguments();
+        Settings setting = new Settings(this.getArguments());
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -108,6 +104,6 @@ public class SettingFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(DummyContent.DummyItem item);
     }
 }

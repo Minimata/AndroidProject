@@ -1,5 +1,8 @@
 package minimata.geosys.dummy;
 
+import android.os.Bundle;
+import android.util.Log;
+
 /**
  * Created by alexandre on 29.11.2016.
  *
@@ -8,17 +11,18 @@ package minimata.geosys.dummy;
  */
 
 public class Types extends DummyContent {
-    public Types(){
+    public Types(Bundle args) {
+        Log.d("d", args.toString());
+        int idCount = 0;
         addItem(createItem(idCount++, "An Alarm to wake up."));
     }
 
-    @Override
     public TypeItem createItem(int id, String description) {
-        return new TypeItem(String.valueOf(id), description);
+        return new TypeItem(id, description);
     }
 
     public class TypeItem extends DummyItem {
-        public TypeItem(String id, String content){
+        public TypeItem(int id, String content){
             super(id, content);
         }
     }

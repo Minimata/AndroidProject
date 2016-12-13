@@ -2,7 +2,7 @@ package minimata.geosys;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -60,8 +60,7 @@ public class AlarmFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_alarm_list, container, false);
-        Alarms alarm = new Alarms();
-        Bundle args = this.getArguments();
+        Alarms alarm = new Alarms(this.getArguments());
 
         // Set the adapter
         if (view instanceof RecyclerView) {
