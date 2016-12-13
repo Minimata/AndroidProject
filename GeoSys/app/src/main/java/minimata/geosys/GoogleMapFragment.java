@@ -126,6 +126,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "The map loaded and the point was set.. normally.");
