@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import minimata.geosys.dummy.DummyContent;
 import minimata.geosys.dummy.DummyContent.DummyItem;
+import minimata.geosys.dummy.Types;
 
 import java.util.List;
 
@@ -59,6 +60,8 @@ public class TypeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_type_list, container, false);
+        Types type = new Types();
+        Bundle args = this.getArguments();
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -69,7 +72,7 @@ public class TypeFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyTypeRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyTypeRecyclerViewAdapter(type.ITEMS, mListener));
         }
         return view;
     }

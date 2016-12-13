@@ -2,7 +2,7 @@ package minimata.geosys;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +13,7 @@ import android.widget.ListView;
 
 import minimata.geosys.dummy.DummyContent;
 import minimata.geosys.dummy.DummyContent.DummyItem;
+import minimata.geosys.dummy.Settings;
 
 import java.util.List;
 
@@ -60,6 +61,8 @@ public class SettingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setting_list, container, false);
+        Settings setting = new Settings();
+        Bundle args = this.getArguments();
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -70,7 +73,7 @@ public class SettingFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MySettingRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MySettingRecyclerViewAdapter(setting.ITEMS, mListener));
         }
         return view;
     }

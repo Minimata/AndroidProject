@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import minimata.geosys.dummy.Alarms;
 import minimata.geosys.dummy.DummyContent;
 import minimata.geosys.dummy.DummyContent.DummyItem;
 
@@ -59,6 +60,8 @@ public class AlarmFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_alarm_list, container, false);
+        Alarms alarm = new Alarms();
+        Bundle args = this.getArguments();
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -69,7 +72,7 @@ public class AlarmFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyAlarmRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyAlarmRecyclerViewAdapter(alarm.ITEMS, mListener));
         }
         return view;
     }
