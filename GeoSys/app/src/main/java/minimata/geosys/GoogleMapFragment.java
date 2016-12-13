@@ -7,7 +7,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -44,6 +45,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     private LatLng position;
     private LocationListener locationListener;
     private LocationManager locationManager;
+    private MarkerOptions userMarkerOptions = new MarkerOptions();
+    private UiSettings mapUiSettings;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -100,17 +103,30 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         Log.d(TAG, "changed location from updateLocation DUDE CHECK IT OUT HERE!!"); //for debug
         position = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.clear();
+        mMap.addMarker(userMarkerOptions.position(position));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-        mMap.addMarker(new MarkerOptions().position(position).title("You are here."));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 17.0f));
     }
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "The map loaded and the point was set.. normally.");
+        //setting Map UI settings
         mMap = googleMap;
+        mapUiSettings = mMap.getUiSettings();
+        mapUiSettings.setCompassEnabled(true);
+        mapUiSettings.setZoomControlsEnabled(true);
+        //setting initial marker position on HE-Arc
         position = new LatLng(46.997455, 6.938350);
-        mMap.addMarker(new MarkerOptions().position(position).title("You are here."));
+        userMarkerOptions.position(position);
+        userMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+        userMarkerOptions.title("You are here.");
+        //moving camera over marker's position, zooming to street level
+        mMap.addMarker(userMarkerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 17.0f));
     }
 
     // TODO: Rename method, update argument and hook method into UI event
