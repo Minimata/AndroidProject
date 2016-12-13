@@ -2,12 +2,12 @@ package minimata.geosys;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +17,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -41,9 +44,14 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     private String mParam2;
 
     private GoogleMap mMap;
-    private LatLng position;
+    private LatLng userPosition;
+    private LatLng selectedPosition;
     private LocationListener locationListener;
     private LocationManager locationManager;
+    private MarkerOptions userMarkerOptions = new MarkerOptions();
+    private MarkerOptions selectedMarkerOptions = new MarkerOptions();
+    private UiSettings mapUiSettings;
+    private CircleOptions circleOptions = new CircleOptions();
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -98,19 +106,75 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
     public void updateLocation(Location location) {
         Log.d(TAG, "changed location from updateLocation DUDE CHECK IT OUT HERE!!"); //for debug
-        position = new LatLng(location.getLatitude(), location.getLongitude());
+        userPosition = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.clear();
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-        mMap.addMarker(new MarkerOptions().position(position).title("You are here."));
+        mMap.addMarker(userMarkerOptions.position(userPosition));
+        mMap.addMarker(selectedMarkerOptions.position(selectedPosition));
+        mMap.addCircle(circleOptions);
     }
+
+    private void initListeners(){
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                mMap.clear();
+                mMap.addMarker(userMarkerOptions.position(userPosition));
+                selectedPosition = latLng;
+                mMap.addMarker(selectedMarkerOptions.position(selectedPosition));
+                mMap.addCircle(circleOptions.center(latLng));
+            }
+        });
+    }
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "The map loaded and the point was set.. normally.");
+        //setting Map UI settings
         mMap = googleMap;
-        position = new LatLng(46.997455, 6.938350);
-        mMap.addMarker(new MarkerOptions().position(position).title("You are here."));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+        mapUiSettings = mMap.getUiSettings();
+        mapUiSettings.setCompassEnabled(true);
+        mapUiSettings.setZoomControlsEnabled(true);
+        //setting Map interaction event listeners
+        initListeners();
+        //setting initial marker userPosition on HE-Arc
+        userPosition = new LatLng(46.997455, 6.938350);
+        initMapObjects();
+        //moving camera over marker's userPosition, zooming to street level
+        mMap.addMarker(userMarkerOptions);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(userPosition));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userPosition, 17.0f));
+    }
+
+    private void initMapObjects() {
+        userMarkerOptions.position(userPosition);
+        userMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+        userMarkerOptions.title("You are here.");
+
+        selectedMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        selectedMarkerOptions.title("Monkey selected this...");
+
+        circleOptions.radius(30);
+        circleOptions.strokeWidth(3);
+        circleOptions.fillColor(Color.argb(30,255,0,0));
+        circleOptions.strokeColor(Color.RED);
+    }
+    /*------------------------UTILITY FOR EXTERNAL OBJECTS----------------------------------------*/
+    public double[] getSelectedPosition(){
+        return new double[] {this.selectedPosition.latitude, this.selectedPosition.longitude};
+    }
+
+    public void setCircleRadius(double radius){
+        this.circleOptions.radius(radius);
+    }
+
+    public void setSelectedMarkerName(String name){
+        this.selectedMarkerOptions.title(name);
+    }
+
+    public void clear(){
+        mMap.clear();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
