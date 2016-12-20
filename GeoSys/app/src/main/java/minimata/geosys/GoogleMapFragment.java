@@ -52,6 +52,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     private MarkerOptions selectedMarkerOptions = new MarkerOptions();
     private UiSettings mapUiSettings;
     private CircleOptions circleOptions = new CircleOptions();
+    private boolean editionMode = false;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -90,7 +91,6 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-
         }
     }
 
@@ -100,32 +100,34 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
         // You can only findFragmentById when the layout has been inflated. Which is done in
         // the onCreateView. Refer to the Fragment lifecycle. RTFM
-        MapFragment mapFragment = (MapFragment)getChildFragmentManager().findFragmentById(R.id.map);
+        MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
     public void updateLocation(Location location) {
-        Log.d(TAG, "changed location from updateLocation DUDE CHECK IT OUT HERE!!"); //for debug
         userPosition = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.clear();
         mMap.addMarker(userMarkerOptions.position(userPosition));
-        mMap.addMarker(selectedMarkerOptions.position(selectedPosition));
-        mMap.addCircle(circleOptions);
+        if (editionMode) {
+            mMap.addMarker(selectedMarkerOptions.position(selectedPosition));
+            mMap.addCircle(circleOptions);
+        }
     }
 
-    private void initListeners(){
+    private void initListeners() {
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                mMap.clear();
-                mMap.addMarker(userMarkerOptions.position(userPosition));
-                selectedPosition = latLng;
-                mMap.addMarker(selectedMarkerOptions.position(selectedPosition));
-                mMap.addCircle(circleOptions.center(latLng));
+                if (editionMode) {
+                    mMap.clear();
+                    mMap.addMarker(userMarkerOptions.position(userPosition));
+                    selectedPosition = latLng;
+                    mMap.addMarker(selectedMarkerOptions.position(selectedPosition));
+                    mMap.addCircle(circleOptions.center(latLng));
+                }
             }
         });
     }
-
 
 
     @Override
@@ -157,23 +159,35 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
         circleOptions.radius(30);
         circleOptions.strokeWidth(3);
-        circleOptions.fillColor(Color.argb(30,255,0,0));
+        circleOptions.fillColor(Color.argb(30, 255, 0, 0));
         circleOptions.strokeColor(Color.RED);
     }
+
     /*------------------------UTILITY FOR EXTERNAL OBJECTS----------------------------------------*/
-    public double[] getSelectedPosition(){
-        return new double[] {this.selectedPosition.latitude, this.selectedPosition.longitude};
+    public double[] getSelectedPosition() {
+        return new double[]{this.selectedPosition.latitude, this.selectedPosition.longitude};
     }
 
-    public void setCircleRadius(double radius){
+    public boolean IsEditionMode() {
+        return this.editionMode;
+    }
+    public boolean IsViewMode() {
+        return !this.editionMode;
+    }
+
+    public void setMode(boolean bool) {
+        this.editionMode = bool;
+    }
+
+    public void setCircleRadius(double radius) {
         this.circleOptions.radius(radius);
     }
 
-    public void setSelectedMarkerName(String name){
+    public void setSelectedMarkerName(String name) {
         this.selectedMarkerOptions.title(name);
     }
 
-    public void clear(){
+    public void clear() {
         mMap.clear();
     }
 
@@ -203,7 +217,6 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 updateLocation(location);
-                Log.d(TAG, "location listener actually working.");
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {

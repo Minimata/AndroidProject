@@ -1,5 +1,7 @@
 package minimata.geosys.dummy;
 
+import android.content.Context;
+import android.net.sip.SipAudioCall;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.SeekBar;
@@ -17,9 +19,11 @@ import minimata.geosys.MainActivity;
 
 public class Settings extends DummyContent {
     public final List<Setting> ITEMS = new ArrayList<Setting>();
-
-    public Settings(Bundle args) {
+    private final String TAG = "settings object";
+    private Context context;
+    public Settings(Bundle args, Context context) {
         // Add some sample items.
+        this.context = context;
         Log.d("d", args.toString());
         addItem(new Slider(0));
         for (int i = 1; i <= 8; i++) {
@@ -34,16 +38,16 @@ public class Settings extends DummyContent {
 
     public class Setting extends DummyItem {
         public int id;
-        public Object widget;
+        public SeekBar widget;
         private Setting(int id, String content) {
             super(id, content);
         }
+        
     }
 
     public class Slider extends Setting {
         private Slider(int id){
             super(id, "radius : ");
-//            widget = new SeekBar();
         }
     }
 

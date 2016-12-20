@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.SeekBar;
+
 import java.io.*;
 
 import java.util.Map;
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private String filename = "saves";
     private BottomSheetBehavior behavior;
-
+    private GoogleMapFragment gmapInstance;
     private static final String[] INITIAL_PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION
     };
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         requestPermissions(INITIAL_PERMS, 1);
         setContentView(R.layout.activity_main);
-
+        gmapInstance = ((GoogleMapFragment)getFragmentManager().findFragmentById(R.id.fragment_googlemap));
         if (savedInstanceState != null) {
             return;
         }
@@ -63,13 +65,17 @@ public class MainActivity extends AppCompatActivity implements
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
                 switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
                         //reset settings
                         fab.setImageResource(ic_input_add);
+                        //resetting gmap editionmode
+                        gmapInstance.setMode(false);
                         break;
 
                     case BottomSheetBehavior.STATE_COLLAPSED:
+                        gmapInstance.setMode(false);
                         fab.setImageResource(ic_delete);
                         break;
 
@@ -144,15 +150,18 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
         if(item.getClass() == Alarms.AlarmItem.class) {
             //open settingsFragment to edit an already existing alarm
             Bundle args = new Bundle();
+            gmapInstance.setMode(true);
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         if(item.getClass() == Types.TypeItem.class) {
             //open settings fragment to create a new alarm
             Bundle args = new Bundle();
+            gmapInstance.setMode(true);
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
@@ -162,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Bundle args = new Bundle();
             replaceFragment(new TypeFragment(), args);
+
         }
     }
 

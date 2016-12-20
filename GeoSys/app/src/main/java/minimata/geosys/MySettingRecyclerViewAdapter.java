@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import minimata.geosys.SettingFragment.OnListFragmentInteractionListener;
@@ -23,6 +24,7 @@ public class MySettingRecyclerViewAdapter extends RecyclerView.Adapter<MySetting
     private final List<Settings.Setting> mValues;
     private final OnListFragmentInteractionListener mListener;
 
+    private final String TAG = "setting recycler view";
     public MySettingRecyclerViewAdapter(List<Settings.Setting> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
@@ -40,6 +42,23 @@ public class MySettingRecyclerViewAdapter extends RecyclerView.Adapter<MySetting
         holder.mItem = mValues.get(position);
 //        holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
+        holder.mSeekBar.setMinimumWidth(30);
+        holder.mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.d(TAG, "onProgressChanged: shits happenin yo.");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +81,7 @@ public class MySettingRecyclerViewAdapter extends RecyclerView.Adapter<MySetting
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
+        public final SeekBar mSeekBar;
         public Settings.Setting mItem;
 
         public ViewHolder(View view) {
@@ -69,6 +89,7 @@ public class MySettingRecyclerViewAdapter extends RecyclerView.Adapter<MySetting
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.content);
+            mSeekBar = (SeekBar) view.findViewById(R.id.radius);
         }
 
         @Override
