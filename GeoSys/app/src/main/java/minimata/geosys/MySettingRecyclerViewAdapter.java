@@ -4,9 +4,10 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import minimata.geosys.SettingFragment.OnListFragmentInteractionListener;
@@ -42,32 +43,17 @@ public class MySettingRecyclerViewAdapter extends RecyclerView.Adapter<MySetting
         holder.mItem = mValues.get(position);
 //        holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
-        holder.mSeekBar.setMinimumWidth(30);
-        holder.mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.mWidget.addView(holder.mItem.instantiateWidget());
+
+        holder.mView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.d(TAG, "onProgressChanged: shits happenin yo.");
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (null != mListener && event.getAction() == MotionEvent.ACTION_DOWN) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
                     mListener.onListFragmentInteraction(holder.mItem);
                 }
+                return true;
             }
         });
     }
@@ -81,7 +67,7 @@ public class MySettingRecyclerViewAdapter extends RecyclerView.Adapter<MySetting
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public final SeekBar mSeekBar;
+        public final FrameLayout mWidget;
         public Settings.Setting mItem;
 
         public ViewHolder(View view) {
@@ -89,7 +75,7 @@ public class MySettingRecyclerViewAdapter extends RecyclerView.Adapter<MySetting
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.content);
-            mSeekBar = (SeekBar) view.findViewById(R.id.radius);
+            mWidget = (FrameLayout) view.findViewById(R.id.widget);
         }
 
         @Override
