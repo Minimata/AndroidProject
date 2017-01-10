@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.SeekBar;
 
 import java.io.*;
 
@@ -167,11 +166,10 @@ public class MainActivity extends AppCompatActivity implements
         }
         if(item.getClass() == Settings.OKButton.class) {
             //creates an event depending of the type of setting (position, radius, tune, save button, etc)
-            Log.d("d", "CSBINAFBNADFBNOADKFNBKADFNB");
+            Log.d("d", item.data.get(0).toString());
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Bundle args = new Bundle();
             replaceFragment(new TypeFragment(), args);
-
         }
     }
 
