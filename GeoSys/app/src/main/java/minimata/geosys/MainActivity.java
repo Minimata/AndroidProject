@@ -1,6 +1,7 @@
 package minimata.geosys;
 
 import android.Manifest;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.widget.SeekBar;
 
 import java.io.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import minimata.geosys.dummy.Alarms;
@@ -45,7 +47,16 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         requestPermissions(INITIAL_PERMS, 1);
         setContentView(R.layout.activity_main);
-        gmapInstance = ((GoogleMapFragment)getFragmentManager().findFragmentById(R.id.fragment_googlemap));
+
+        // mes testes
+        try {
+            createFileLocal();
+            readFileLocal();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        gmapInstance = ((GoogleMapFragment) getFragmentManager().findFragmentById(R.id.fragment_googlemap));
         if (savedInstanceState != null) {
             return;
         }
@@ -151,21 +162,21 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
 
-        if(item.getClass() == Alarms.AlarmItem.class) {
+        if (item.getClass() == Alarms.AlarmItem.class) {
             //open settingsFragment to edit an already existing alarm
             Bundle args = new Bundle();
             gmapInstance.setMode(true);
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
-        if(item.getClass() == Types.TypeItem.class) {
+        if (item.getClass() == Types.TypeItem.class) {
             //open settings fragment to create a new alarm
             Bundle args = new Bundle();
             gmapInstance.setMode(true);
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
-        if(item.getClass() == Settings.OKButton.class) {
+        if (item.getClass() == Settings.OKButton.class) {
             //creates an event depending of the type of setting (position, radius, tune, save button, etc)
             Log.d("d", "CSBINAFBNADFBNOADKFNBKADFNB");
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -174,6 +185,26 @@ public class MainActivity extends AppCompatActivity implements
 
         }
     }
+
+    public void createFileLocal() throws IOException {
+
+        String FILENAME = "hello_file";
+        String string = "hello world!";
+
+        FileOutputStream fileOutputStream = new FileOutputStream("hello_file");
+        ObjectOutputStream objectOutputStream= new ObjectOutputStream(fileOutputStream);
+
+        objectOutputStream.writeObject(myHashMap);
+        objectOutputStream.close();
+    }
+    public void readFileLocal() throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream  = new FileInputStream("hello_file");
+        ObjectInputStream objectInputStream2 = new ObjectInputStream(fileInputStream);
+
+        Map myNewlyReadInMap = (HashMap) objectInputStream2.readObject();
+        objectInputStream2.close();
+    }
+
 
     public void SaveToFile(Map map) {
         try
