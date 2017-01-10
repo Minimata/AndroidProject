@@ -32,10 +32,12 @@ public class DummyContent {
     public class DummyItem {
         public int id;
         public String content;
+        public ArrayList<Integer> data;
 
         public DummyItem(int id, String content) {
             this.id = id;
             this.content = content;
+            data = new ArrayList<>();
         }
     }
 }
