@@ -8,6 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +62,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     private UiSettings mapUiSettings;
     private CircleOptions circleOptions = new CircleOptions();
     private boolean editionMode = false;
+    private Map<String,HashMap<LatLng,Double>> savedPositions = new HashMap<String, HashMap<LatLng, Double>>();
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -120,8 +130,10 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
             public void onMapClick(LatLng latLng) {
                 if (editionMode) {
                     mMap.clear();
+                    drawAllMarkers();
                     mMap.addMarker(userMarkerOptions.position(userPosition));
                     selectedPosition = latLng;
+                    selectedMarkerOptions.title("You selected this.");
                     mMap.addMarker(selectedMarkerOptions.position(selectedPosition));
                     mMap.addCircle(circleOptions.center(latLng));
                 }
@@ -132,7 +144,6 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "The map loaded and the point was set.. normally.");
         //setting Map UI settings
         mMap = googleMap;
         mapUiSettings = mMap.getUiSettings();
@@ -147,25 +158,61 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         mMap.addMarker(userMarkerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(userPosition));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userPosition, 17.0f));
+        HashMap<LatLng,Double> temp = new HashMap<LatLng,Double>();
+        temp.put(new LatLng(46.9975,6.9388),30.0);
+        savedPositions.put("Yolo1",temp);
+        temp = new HashMap<LatLng,Double>();
+        temp.put(new LatLng(46.9979,6.9388),30.0);
+        savedPositions.put("Yolo2",temp);
+        temp = new HashMap<LatLng,Double>();
+        temp.put(new LatLng(46.9975,6.9395),30.0);
+        savedPositions.put("Yolo3",temp);
+        drawAllMarkers();
     }
 
+    private void drawAllMarkers(){
+        for(Map.Entry<String, HashMap<LatLng,Double>> entry : savedPositions.entrySet()) {
+            LatLng position = new LatLng(0,0);
+            Double radius = 30.0;
+            for(Map.Entry<LatLng,Double> entry2 : entry.getValue().entrySet()) {
+                position = entry2.getKey();
+                radius = entry2.getValue();
+            }
+            createNewCircleMarker(position,radius,entry.getKey());
+        }
+    }
+
+    private void createNewCircleMarker(LatLng position, double radius, String name){
+        selectedMarkerOptions.position(position);
+        selectedMarkerOptions.title(name);
+        mMap.addMarker(selectedMarkerOptions);
+        circleOptions.radius(radius);
+        circleOptions.center(position);
+        mMap.addCircle(circleOptions);
+    }
     private void initMapObjects() {
         userMarkerOptions.position(userPosition);
         userMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
         userMarkerOptions.title("You are here.");
 
         selectedMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        selectedMarkerOptions.title("Monkey selected this...");
+        selectedMarkerOptions.title("You selected this...");
 
-        circleOptions.radius(30);
+        circleOptions.radius(30.0);
         circleOptions.strokeWidth(3);
         circleOptions.fillColor(Color.argb(30, 255, 0, 0));
         circleOptions.strokeColor(Color.RED);
     }
 
     /*------------------------UTILITY FOR EXTERNAL OBJECTS----------------------------------------*/
-    public double[] getSelectedPosition() {
-        return new double[]{this.selectedPosition.latitude, this.selectedPosition.longitude};
+    public void savePosition(LatLng position, double radius, String name){
+        HashMap<LatLng,Double> data = new HashMap<LatLng,Double>();
+        data.put(position,radius);
+        this.savedPositions.put(name,data);
+    }
+
+    public void savePositionsToFile(){
+        //TODO: implement saving to the correct file
     }
 
     public boolean IsEditionMode() {
@@ -175,7 +222,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         return !this.editionMode;
     }
 
-    public void setMode(boolean bool) {
+    public void activateEditionMode(boolean bool) {
         this.editionMode = bool;
     }
 
@@ -197,6 +244,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 //            mListener.onFragmentInteraction(uri);
 //        }
 //    }
+
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onAttach(Context context) {

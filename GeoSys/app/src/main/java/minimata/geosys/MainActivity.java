@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.SeekBar;
 
 import java.io.*;
 
@@ -71,11 +70,11 @@ public class MainActivity extends AppCompatActivity implements
                         //reset settings
                         fab.setImageResource(ic_input_add);
                         //resetting gmap editionmode
-                        gmapInstance.setMode(false);
+                        gmapInstance.activateEditionMode(false);
                         break;
 
                     case BottomSheetBehavior.STATE_COLLAPSED:
-                        gmapInstance.setMode(false);
+                        gmapInstance.activateEditionMode(false);
                         fab.setImageResource(ic_delete);
                         break;
 
@@ -154,14 +153,14 @@ public class MainActivity extends AppCompatActivity implements
         if(item.getClass() == Alarms.AlarmItem.class) {
             //open settingsFragment to edit an already existing alarm
             Bundle args = new Bundle();
-            gmapInstance.setMode(true);
+            gmapInstance.activateEditionMode(true);
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         if(item.getClass() == Types.TypeItem.class) {
             //open settings fragment to create a new alarm
             Bundle args = new Bundle();
-            gmapInstance.setMode(true);
+            gmapInstance.activateEditionMode(true);
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
