@@ -47,14 +47,6 @@ public class MainActivity extends AppCompatActivity implements
         requestPermissions(INITIAL_PERMS, 1);
         setContentView(R.layout.activity_main);
 
-        // mes testes
-        try {
-            createFileLocal();
-            readFileLocal();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         gmapInstance = ((GoogleMapFragment) getFragmentManager().findFragmentById(R.id.fragment_googlemap));
         if (savedInstanceState != null) {
             return;
@@ -182,27 +174,11 @@ public class MainActivity extends AppCompatActivity implements
             Bundle args = new Bundle();
             replaceFragment(new TypeFragment(), args);
         }
+        if (item.getClass() == Settings.Slider.class) {
+            Log.d("d", item.data.get(0).toString());
+            // Update GMap
+        }
     }
-
-    public void createFileLocal() throws IOException {
-
-        String FILENAME = "hello_file";
-        String string = "hello world!";
-
-        FileOutputStream fileOutputStream = new FileOutputStream("hello_file");
-        ObjectOutputStream objectOutputStream= new ObjectOutputStream(fileOutputStream);
-
-        objectOutputStream.writeObject(myHashMap);
-        objectOutputStream.close();
-    }
-    public void readFileLocal() throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream  = new FileInputStream("hello_file");
-        ObjectInputStream objectInputStream2 = new ObjectInputStream(fileInputStream);
-
-        Map myNewlyReadInMap = (HashMap) objectInputStream2.readObject();
-        objectInputStream2.close();
-    }
-
 
     public void SaveToFile(Map map) {
         try
@@ -222,7 +198,9 @@ public class MainActivity extends AppCompatActivity implements
         {
             FileInputStream fileInputStream = new FileInputStream(filename);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            return (Map)objectInputStream.readObject();
+            Map r = (Map)objectInputStream.readObject();
+            objectInputStream.close();
+            return r;
         }
         catch(ClassNotFoundException | IOException | ClassCastException e) {
             e.printStackTrace();

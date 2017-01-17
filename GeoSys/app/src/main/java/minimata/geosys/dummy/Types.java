@@ -12,7 +12,6 @@ import android.util.Log;
 
 public class Types extends DummyContent {
     public Types(Bundle args) {
-        Log.d("d", args.toString());
         int idCount = 0;
         addItem(createItem(idCount++, "An Alarm to wake up."));
     }

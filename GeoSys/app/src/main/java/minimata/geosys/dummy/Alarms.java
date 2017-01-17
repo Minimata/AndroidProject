@@ -12,7 +12,6 @@ import android.util.Log;
 public class Alarms extends DummyContent {
 
     public Alarms(Bundle args){
-        Log.d("d", args.toString());
         // Add some sample items.
         int idCount = 0;
         for (int i = 1; i <= 3; i++) {
