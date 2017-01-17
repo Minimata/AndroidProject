@@ -11,10 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import minimata.geosys.dummy.Alarms;
-import minimata.geosys.dummy.DummyContent;
 import minimata.geosys.dummy.DummyContent.DummyItem;
-
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.

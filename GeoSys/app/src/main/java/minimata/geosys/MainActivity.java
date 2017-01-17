@@ -150,6 +150,10 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    public GoogleMapFragment getGMapFragment() {
+        return gmapInstance;
+    }
+
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
 
@@ -173,10 +177,6 @@ public class MainActivity extends AppCompatActivity implements
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Bundle args = new Bundle();
             replaceFragment(new TypeFragment(), args);
-        }
-        if (item.getClass() == Settings.Slider.class) {
-            Log.d("d", item.data.get(0).toString());
-            // Update GMap
         }
     }
 
