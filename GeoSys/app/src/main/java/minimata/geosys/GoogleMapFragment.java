@@ -24,13 +24,9 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -203,16 +199,46 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         circleOptions.fillColor(Color.argb(30, 255, 0, 0));
         circleOptions.strokeColor(Color.RED);
     }
+    /*------------------------MATH UTILITY--------------------------------------------------------*/
+    public double calculationByDistance(LatLng StartP, LatLng EndP) {
+        int Radius=6371;//radius of earth in Km
+        double lat1 = StartP.latitude;
+        double lat2 = EndP.latitude;
+        double lon1 = StartP.longitude;
+        double lon2 = EndP.longitude;
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLon = Math.toRadians(lon2-lon1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult= Radius*c;
+        double km=valueResult/1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec =  Integer.valueOf(newFormat.format(km));
+        double meter=valueResult%1000;
+        int  meterInDec= Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value",""+valueResult+"   KM  "+kmInDec+" Meter   "+meterInDec);
 
-    /*------------------------UTILITY FOR EXTERNAL OBJECTS----------------------------------------*/
-    public void savePosition(LatLng position, double radius, String name){
-        HashMap<LatLng,Double> data = new HashMap<LatLng,Double>();
-        data.put(position,radius);
-        this.savedPositions.put(name,data);
+        return Radius * c;
     }
-
-    public void savePositionsToFile(){
-        //TODO: implement saving to the correct file
+    /*------------------------UTILITY FOR EXTERNAL OBJECTS----------------------------------------*/
+    public LatLng getSelectedPosition(){
+        return selectedPosition;
+    }
+    public void setSavedPositions(HashMap<String,HashMap<LatLng,Double>> positionsToSet){
+        for(Map.Entry<String, HashMap<LatLng,Double>> entry : positionsToSet.entrySet()){
+            String id = entry.getKey();
+            LatLng position;
+            Double radius;
+            HashMap<LatLng,Double> area = new HashMap<LatLng, Double>();
+            for(Map.Entry<LatLng,Double> entry2 : entry.getValue().entrySet()){
+                position = entry2.getKey();
+                radius = entry2.getValue();
+                area.put(position,radius);
+            }
+            savedPositions.put(id,area);
+        }
     }
 
     public boolean IsEditionMode() {
@@ -236,6 +262,10 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
     public void clear() {
         mMap.clear();
+    }
+
+    public boolean isUserInArea(LatLng eventlocation, double eventradius){
+        return (calculationByDistance(eventlocation,userPosition)<=eventradius);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
