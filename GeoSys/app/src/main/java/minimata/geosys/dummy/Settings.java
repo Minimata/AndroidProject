@@ -1,23 +1,16 @@
 package minimata.geosys.dummy;
 
 import android.content.Context;
-import android.net.sip.SipAudioCall;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
-import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import minimata.geosys.GoogleMapFragment;
 import minimata.geosys.MainActivity;
-import minimata.geosys.MySettingRecyclerViewAdapter;
-import minimata.geosys.SettingFragment;
 
 /**
  * Created by alexandre on 29.11.2016.
@@ -25,15 +18,21 @@ import minimata.geosys.SettingFragment;
  * This class lists the amount of settings available for a single type of alarm.
  */
 
-public class Settings extends DummyContent {
+public class Settings extends DummyContent{
     public final List<Setting> ITEMS = new ArrayList<Setting>();
     private final String TAG = "settings object";
     private Context context;
+    private MainActivity main;
+    private GoogleMapFragment gmap;
+    private Bundle args;
     private ArrayList<Setting> widgets;
 
     public Settings(Bundle args, Context context) {
         // Add some sample items.
         this.context = context;
+        this.args = args;
+        main = (MainActivity) context;
+        gmap = main.getGMapFragment();
         widgets = new ArrayList<>();
         addItem(new Slider(0));
         addItem(new OKButton(1, widgets));
@@ -44,9 +43,7 @@ public class Settings extends DummyContent {
         ITEMS.add(s);
     }
 
-    public abstract class Setting extends DummyItem {
-        public int id;
-
+    public abstract class Setting extends DummyItem{
         private Setting(int id, String content) {
             super(id, content);
         }
@@ -68,13 +65,10 @@ public class Settings extends DummyContent {
             seekBar.setMinimumWidth(100);
             seekBar.setProgress(0);
             data.put(0, 0);
-            seekBar.setClickable(false);
-            seekBar.setFocusable(false);
-            seekBar.setFocusableInTouchMode(false);
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    data.put(0, progress);
+                    gmap.updateRadius(progress);
                 }
 
                 @Override
@@ -85,16 +79,6 @@ public class Settings extends DummyContent {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
 
-                }
-            });
-
-            seekBar.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        Log.d("d", "INIIIIIINI");
-                    }
-                    return false;
                 }
             });
 
@@ -125,6 +109,7 @@ public class Settings extends DummyContent {
                         for (Setting widget : widgets) {
                             data.put(widget.id, widget.getValue());
                         }
+                        //data.put(widgets.size(), gmap.getSelectedPosition());
                     }
                     return false;
                 }

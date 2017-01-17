@@ -22,8 +22,8 @@ public class DummyContent {
         ITEMS.add(item);
     }
 
-    protected DummyItem createItem(int id) {
-        return new DummyItem(id, "An Item");
+    protected DummyItem createItem(int id, String desc) {
+        return new DummyItem(id, desc);
     }
 
     /**

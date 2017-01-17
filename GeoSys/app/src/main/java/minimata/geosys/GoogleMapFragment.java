@@ -120,6 +120,10 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    public void updateRadius(int radius) {
+        Log.d("d", Integer.toString(radius));
+    }
+
     private void initListeners() {
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
