@@ -65,8 +65,13 @@ public class MainActivity extends AppCompatActivity implements
         View bottomSheet = findViewById(R.id.bottom_sheet);
         //Bottom sheet behaviour
         behavior = BottomSheetBehavior.from(bottomSheet);
-
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        /**
+         * This here makes the bottom sheet come up to half of screen height.
+         * It's not a good practice, but the xml and bottom sheet doesn't allow get along well
+         * if we don't wnat the bottom sheet to come up all the way to the top of the screen.
+         */
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         int height = metrics.heightPixels;
@@ -129,10 +134,16 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        /**
+         * Setting up fragments
+         */
         Bundle args = new Bundle(); // Just in case we need arguments in the future.
         addFragment(new AlarmFragment(), args, R.id.fragment_alarms);
         addFragment(new TypeFragment(), args, R.id.fragment_type_settings);
 
+        /**
+         * loading in memory the previously saved alarms
+         */
         HashMap<Integer, HashMap<LatLng, Double>> locations = (HashMap<Integer, HashMap<LatLng, Double>>) ReadFromFile();
         if(locations != null) {
             for (Map.Entry<Integer, HashMap<LatLng, Double>> entry : locations.entrySet()) {
@@ -142,6 +153,10 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
+
+        /**
+         * Setting up a thread to check every second if we enter an alarm radius
+         */
         Runnable myRunnable = new Runnable() {
             @Override
             public void run() {
@@ -217,9 +232,16 @@ public class MainActivity extends AppCompatActivity implements
         return gmapInstance;
     }
 
+    /**
+     * This will be called when a list fragment is pressed, as en event.
+     * @param item the item clicked, polmorphed into a dummy.
+     */
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
 
+        /**
+         * If we click an already set alarm.
+         */
         if (item.getClass() == Alarms.AlarmItem.class) {
             //open settingsFragment to edit an already existing alarm
             Bundle args = new Bundle();
@@ -227,6 +249,10 @@ public class MainActivity extends AppCompatActivity implements
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
+        /**
+         * If we click a type of setting to configure.
+         * For now there's only alarms but there could be another one in the future.
+         */
         if (item.getClass() == Types.TypeItem.class) {
             //open settings fragment to create a new alarm
             Bundle args = new Bundle();
@@ -234,6 +260,9 @@ public class MainActivity extends AppCompatActivity implements
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
+        /**
+         * Pressing the OKButton on the settingsfragment
+         */
         if (item.getClass() == Settings.OKButton.class) {
             //creates an event depending of the type of setting (position, radius, tune, save button, etc)
             Log.d("d", item.data.get(0).toString());

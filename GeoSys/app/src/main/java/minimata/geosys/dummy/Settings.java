@@ -102,6 +102,15 @@ public class Settings extends DummyContent{
             Button v = new Button(context);
             v.setText("OK");
             v.setClickable(false);
+            /**
+             * Here we collect the values of other settings in the fragment, store it in data
+             * and forward the touch event further.
+             * This way, the list interaction fragment triggers the event and we call
+             * the content of data from the mainactivity directly.
+             * This allows to pass any number of parameters to the main activity on touch event,
+             * therefore easily adding settings to our alarms when the time comes.
+             * Here, the only setting is a slider for the radius, for now at least.
+             */
             v.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
