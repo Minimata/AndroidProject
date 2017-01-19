@@ -109,7 +109,7 @@ public class Settings extends DummyContent{
                         for (Setting widget : widgets) {
                             data.put(widget.id, widget.getValue());
                         }
-                        //data.put(widgets.size(), gmap.getSelectedPosition());
+                        data.put(widgets.size(), gmap.getSelectedPosition());
                     }
                     return false;
                 }

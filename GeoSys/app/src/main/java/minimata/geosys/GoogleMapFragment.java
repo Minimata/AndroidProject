@@ -58,7 +58,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     private UiSettings mapUiSettings;
     private CircleOptions circleOptions = new CircleOptions();
     private boolean editionMode = false;
-    private Map<String,HashMap<LatLng,Double>> savedPositions = new HashMap<String, HashMap<LatLng, Double>>();
+    private HashMap<String,HashMap<LatLng,Double>> savedPositions = new HashMap<String, HashMap<LatLng, Double>>();
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -230,19 +230,16 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     public LatLng getSelectedPosition(){
         return selectedPosition;
     }
-    public void setSavedPositions(HashMap<String,HashMap<LatLng,Double>> positionsToSet){
-        for(Map.Entry<String, HashMap<LatLng,Double>> entry : positionsToSet.entrySet()){
-            String id = entry.getKey();
-            LatLng position;
-            Double radius;
-            HashMap<LatLng,Double> area = new HashMap<LatLng, Double>();
-            for(Map.Entry<LatLng,Double> entry2 : entry.getValue().entrySet()){
-                position = entry2.getKey();
-                radius = entry2.getValue();
-                area.put(position,radius);
-            }
-            savedPositions.put(id,area);
+    public int getNumberOfAlarms() { return savedPositions.size(); }
+    public Map<String,HashMap<LatLng,Double>> getPositions() { return savedPositions; }
+    public void setSavedPositions(int id, HashMap<LatLng,Double> positionsToSet){
+        HashMap<LatLng,Double> area = new HashMap<LatLng, Double>();
+        for(Map.Entry<LatLng,Double> entry2 : positionsToSet.entrySet()){
+            LatLng position = entry2.getKey();
+            double radius = entry2.getValue();
+            area.put(position,radius);
         }
+        savedPositions.put("Alarm " + Integer.toString(id), area);
     }
 
     public boolean IsEditionMode() {

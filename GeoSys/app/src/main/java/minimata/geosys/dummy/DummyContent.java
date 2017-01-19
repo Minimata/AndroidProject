@@ -32,7 +32,7 @@ public class DummyContent {
     public class DummyItem {
         public int id;
         public String content;
-        public HashMap<Integer, Integer> data;
+        public HashMap<Integer, Object> data;
 
         public DummyItem(int id, String content) {
             this.id = id;
