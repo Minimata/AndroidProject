@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements
         int num = gmapInstance.getNumberOfAlarms();
         alarm.put(position, radius);
         gmapInstance.setSavedPositions(num, alarm);
+        SaveToFile(gmapInstance.getPositions());
     }
 
     private void addFragment(Fragment fragment, Bundle args, int id) {

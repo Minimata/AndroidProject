@@ -58,7 +58,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     private CircleOptions circleOptions = new CircleOptions();
     private Integer selectedRadius;
     private boolean editionMode = false;
-    private HashMap<Integer,HashMap<LatLng,Integer>> savedPositions = new HashMap<Integer, HashMap<LatLng, Integer>>();
+    private HashMap<Integer, HashMap<LatLng, Integer>> savedPositions = new HashMap<Integer, HashMap<LatLng, Integer>>();
 
     public GoogleMapFragment() {
         // Required empty public constructor
@@ -161,20 +161,23 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         drawAllMarkers();
     }
 
-    private void drawAllMarkers(){
+    private void drawAllMarkers() {
         mMap.clear();
-        for(Map.Entry<Integer, HashMap<LatLng,Integer>> entry : savedPositions.entrySet()) {
-            LatLng position = new LatLng(0,0);
+        for (Map.Entry<Integer, HashMap<LatLng, Integer>> entry : savedPositions.entrySet()) {
+            LatLng position = new LatLng(0, 0);
             Integer radius = 30;
-            for(Map.Entry<LatLng,Integer> entry2 : entry.getValue().entrySet()) {
+            for (Map.Entry<LatLng, Integer> entry2 : entry.getValue().entrySet()) {
                 position = entry2.getKey();
                 radius = entry2.getValue();
             }
-            createNewCircleMarker(position,radius,"Alarm " + entry.getKey());
+            createNewCircleMarker(position, radius, "Alarm " + entry.getKey());
         }
+        mMap.addMarker(userMarkerOptions.position(userPosition));
+        if(selectedPosition != null)
+            createNewCircleMarker(selectedPosition,selectedRadius,"You selected this...");
     }
 
-    private void createNewCircleMarker(LatLng position, int radius, String name){
+    private void createNewCircleMarker(LatLng position, int radius, String name) {
         selectedMarkerOptions.position(position);
         selectedMarkerOptions.title(name);
         mMap.addMarker(selectedMarkerOptions);
@@ -182,6 +185,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         circleOptions.center(position);
         mMap.addCircle(circleOptions);
     }
+
     private void initMapObjects() {
         userMarkerOptions.position(userPosition);
         userMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
@@ -195,43 +199,50 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         circleOptions.fillColor(Color.argb(30, 255, 0, 0));
         circleOptions.strokeColor(Color.RED);
     }
+
     /*------------------------MATH UTILITY--------------------------------------------------------*/
     public double calculationByDistance(LatLng StartP, LatLng EndP) {
-        int Radius=6371;//radius of earth in Km
+        int Radius = 6371;//radius of earth in Km
         double lat1 = StartP.latitude;
         double lat2 = EndP.latitude;
         double lon1 = StartP.longitude;
         double lon2 = EndP.longitude;
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLon = Math.toRadians(lon2-lon1);
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLon/2) * Math.sin(dLon/2);
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.asin(Math.sqrt(a));
-        double valueResult= Radius*c;
-        double km=valueResult/1;
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
         DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec =  Integer.valueOf(newFormat.format(km));
-        double meter=valueResult%1000;
-        int  meterInDec= Integer.valueOf(newFormat.format(meter));
-        Log.i("Radius Value",""+valueResult+"   KM  "+kmInDec+" Meter   "+meterInDec);
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec + " Meter   " + meterInDec);
 
         return Radius * c;
     }
+
     /*------------------------UTILITY FOR EXTERNAL OBJECTS----------------------------------------*/
-    public LatLng getSelectedPosition(){
+    public LatLng getSelectedPosition() {
         return selectedPosition;
     }
-    public int getNumberOfAlarms() { return savedPositions.size(); }
 
-    public Map<Integer,HashMap<LatLng,Integer>> getPositions() { return savedPositions; }
+    public int getNumberOfAlarms() {
+        return savedPositions.size();
+    }
 
-    public void setSavedPositions(int id, HashMap<LatLng,Integer> positionsToSet){
-        HashMap<LatLng,Integer> area = new HashMap<LatLng, Integer>();
-        for(Map.Entry<LatLng,Integer> entry2 : positionsToSet.entrySet()){
+    public Map<Integer, HashMap<LatLng, Integer>> getPositions() {
+        return savedPositions;
+    }
+
+    public void setSavedPositions(int id, HashMap<LatLng, Integer> positionsToSet) {
+        HashMap<LatLng, Integer> area = new HashMap<LatLng, Integer>();
+        for (Map.Entry<LatLng, Integer> entry2 : positionsToSet.entrySet()) {
             LatLng position = entry2.getKey();
             int radius = entry2.getValue();
-            area.put(position,radius);
+            area.put(position, radius);
         }
         savedPositions.put(id, area);
     }
@@ -239,6 +250,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     public boolean IsEditionMode() {
         return this.editionMode;
     }
+
     public boolean IsViewMode() {
         return !this.editionMode;
     }
@@ -259,8 +271,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         mMap.clear();
     }
 
-    public boolean isUserInArea(LatLng eventlocation, double eventradius){
-        return (calculationByDistance(eventlocation,userPosition)<=eventradius);
+    public boolean isUserInArea(LatLng eventlocation, double eventradius) {
+        return (calculationByDistance(eventlocation, userPosition) <= eventradius);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -275,15 +287,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        mListener = (OnFragmentInteractionListener) context;
         initializeLocationEngine();
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//            initializeLocationEngine();
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     private void initializeLocationEngine() {
