@@ -144,11 +144,11 @@ public class MainActivity extends AppCompatActivity implements
         /**
          * loading in memory the previously saved alarms
          */
-        HashMap<Integer, HashMap<LatLng, Double>> locations = (HashMap<Integer, HashMap<LatLng, Double>>) ReadFromFile();
+        HashMap<Integer, HashMap<LatLng, Integer>> locations = (HashMap<Integer, HashMap<LatLng, Integer>>) ReadFromFile();
         if(locations != null) {
-            for (Map.Entry<Integer, HashMap<LatLng, Double>> entry : locations.entrySet()) {
+            for (Map.Entry<Integer, HashMap<LatLng, Integer>> entry : locations.entrySet()) {
                 int key = entry.getKey();
-                HashMap<LatLng, Double> value = entry.getValue();
+                HashMap<LatLng, Integer> value = entry.getValue();
                 gmapInstance.setSavedPositions(key, value);
             }
         }
@@ -163,11 +163,11 @@ public class MainActivity extends AppCompatActivity implements
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
                         Thread.sleep(1000); // Waits for 1 second (1000 milliseconds)
-                        HashMap<String, HashMap<LatLng, Double>> locations = (HashMap<String, HashMap<LatLng, Double>>) gmapInstance.getPositions();
-                        for (Map.Entry<String, HashMap<LatLng, Double>> entry : locations.entrySet()) {
-                            String key = entry.getKey();
-                            HashMap<LatLng, Double> value = entry.getValue();
-                            for(HashMap.Entry<LatLng,Double> entry2 : value.entrySet()){
+                        HashMap<Integer, HashMap<LatLng, Integer>> locations = (HashMap<Integer, HashMap<LatLng, Integer>>) gmapInstance.getPositions();
+                        for (Map.Entry<Integer, HashMap<LatLng, Integer>> entry : locations.entrySet()) {
+                            Integer key = entry.getKey();
+                            HashMap<LatLng, Integer> value = entry.getValue();
+                            for(HashMap.Entry<LatLng,Integer> entry2 : value.entrySet()){
                                 LatLng position = entry2.getKey();
                                 double radius = entry2.getValue();
                                 if(gmapInstance.isUserInArea(position, radius)) {
@@ -192,14 +192,14 @@ public class MainActivity extends AppCompatActivity implements
         checkAlarms.interrupt();
     }
 
-    public void setAlarm(String name) {
+    public void setAlarm(Integer name) {
         AlarmManager manager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(name), 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(""+name), 0);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, System.currentTimeMillis() + 1000, pendingIntent);
     }
 
-    public void newAlarm(double radius, LatLng position) {
-        HashMap<LatLng, Double> alarm = new HashMap<>();
+    public void newAlarm(int radius, LatLng position) {
+        HashMap<LatLng, Integer> alarm = new HashMap<>();
         int num = gmapInstance.getNumberOfAlarms();
         alarm.put(position, radius);
         gmapInstance.setSavedPositions(num, alarm);
@@ -265,8 +265,7 @@ public class MainActivity extends AppCompatActivity implements
          */
         if (item.getClass() == Settings.OKButton.class) {
             //creates an event depending of the type of setting (position, radius, tune, save button, etc)
-            Log.d("d", item.data.get(0).toString());
-            newAlarm((Integer) item.data.get(0), (LatLng) item.data.get(1));
+            newAlarm((Integer) item.data.keySet().toArray()[0], (LatLng) item.data.values().toArray()[0]);
 
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Bundle args = new Bundle();

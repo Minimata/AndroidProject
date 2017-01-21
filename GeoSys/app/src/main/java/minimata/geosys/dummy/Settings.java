@@ -2,6 +2,7 @@ package minimata.geosys.dummy;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -115,10 +116,11 @@ public class Settings extends DummyContent{
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        for (Setting widget : widgets) {
-                            data.put(widget.id, widget.getValue());
+                        for (Setting widget : widgets){
+                            //check if it's not the Ok Button
+                            if(widget.id != widgets.size()-1)
+                                data.put(widget.getValue(),gmap.getSelectedPosition());
                         }
-                        data.put(widgets.size(), gmap.getSelectedPosition());
                     }
                     return false;
                 }

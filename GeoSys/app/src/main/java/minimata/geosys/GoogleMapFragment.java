@@ -8,7 +8,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,10 +56,9 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     private MarkerOptions selectedMarkerOptions = new MarkerOptions();
     private UiSettings mapUiSettings;
     private CircleOptions circleOptions = new CircleOptions();
+    private Integer selectedRadius;
     private boolean editionMode = false;
-    private HashMap<String,HashMap<LatLng,Double>> savedPositions = new HashMap<String, HashMap<LatLng, Double>>();
-
-//    private OnFragmentInteractionListener mListener;
+    private HashMap<Integer,HashMap<LatLng,Integer>> savedPositions = new HashMap<Integer, HashMap<LatLng, Integer>>();
 
     public GoogleMapFragment() {
         // Required empty public constructor
@@ -122,6 +120,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
     public void updateRadius(int radius) {
         Log.d("d", Integer.toString(radius));
+        this.selectedRadius = radius;
+        drawAllMarkers();
     }
 
     private void initListeners() {
@@ -158,31 +158,23 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         mMap.addMarker(userMarkerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(userPosition));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userPosition, 17.0f));
-        HashMap<LatLng,Double> temp = new HashMap<LatLng,Double>();
-        temp.put(new LatLng(46.9975,6.9388),30.0);
-        savedPositions.put("Yolo1",temp);
-        temp = new HashMap<LatLng,Double>();
-        temp.put(new LatLng(46.9979,6.9388),30.0);
-        savedPositions.put("Yolo2",temp);
-        temp = new HashMap<LatLng,Double>();
-        temp.put(new LatLng(46.9975,6.9395),30.0);
-        savedPositions.put("Yolo3",temp);
         drawAllMarkers();
     }
 
     private void drawAllMarkers(){
-        for(Map.Entry<String, HashMap<LatLng,Double>> entry : savedPositions.entrySet()) {
+        mMap.clear();
+        for(Map.Entry<Integer, HashMap<LatLng,Integer>> entry : savedPositions.entrySet()) {
             LatLng position = new LatLng(0,0);
-            Double radius = 30.0;
-            for(Map.Entry<LatLng,Double> entry2 : entry.getValue().entrySet()) {
+            Integer radius = 30;
+            for(Map.Entry<LatLng,Integer> entry2 : entry.getValue().entrySet()) {
                 position = entry2.getKey();
                 radius = entry2.getValue();
             }
-            createNewCircleMarker(position,radius,entry.getKey());
+            createNewCircleMarker(position,radius,"Alarm " + entry.getKey());
         }
     }
 
-    private void createNewCircleMarker(LatLng position, double radius, String name){
+    private void createNewCircleMarker(LatLng position, int radius, String name){
         selectedMarkerOptions.position(position);
         selectedMarkerOptions.title(name);
         mMap.addMarker(selectedMarkerOptions);
@@ -231,15 +223,17 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         return selectedPosition;
     }
     public int getNumberOfAlarms() { return savedPositions.size(); }
-    public Map<String,HashMap<LatLng,Double>> getPositions() { return savedPositions; }
-    public void setSavedPositions(int id, HashMap<LatLng,Double> positionsToSet){
-        HashMap<LatLng,Double> area = new HashMap<LatLng, Double>();
-        for(Map.Entry<LatLng,Double> entry2 : positionsToSet.entrySet()){
+
+    public Map<Integer,HashMap<LatLng,Integer>> getPositions() { return savedPositions; }
+
+    public void setSavedPositions(int id, HashMap<LatLng,Integer> positionsToSet){
+        HashMap<LatLng,Integer> area = new HashMap<LatLng, Integer>();
+        for(Map.Entry<LatLng,Integer> entry2 : positionsToSet.entrySet()){
             LatLng position = entry2.getKey();
-            double radius = entry2.getValue();
+            int radius = entry2.getValue();
             area.put(position,radius);
         }
-        savedPositions.put("Alarm " + Integer.toString(id), area);
+        savedPositions.put(id, area);
     }
 
     public boolean IsEditionMode() {
