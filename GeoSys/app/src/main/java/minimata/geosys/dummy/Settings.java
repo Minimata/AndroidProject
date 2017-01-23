@@ -65,11 +65,19 @@ public class Settings extends DummyContent{
             seekBar = new SeekBar(context);
             seekBar.setMinimumWidth(100);
             seekBar.setProgress(0);
+            seekBar.setMax(200);
             data.put(0, 0);
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    gmap.updateRadius(progress);
+                    int MIN = 20;
+                    if(progress < MIN){
+                        gmap.updateRadius(progress+MIN);
+                    }
+                    else{
+                        gmap.updateRadius(progress);
+                    }
+
                 }
 
                 @Override
