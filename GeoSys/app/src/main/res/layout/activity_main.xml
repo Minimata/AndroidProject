@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@android:color/holo_green_dark">
+                android:background="#303030">
 
                 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:name="minimata.geosys.AlarmFragment"
@@ -50,7 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@android:color/holo_orange_dark"
+        android:background="@android:color/black"
         android:clipToPadding="true"
         android:orientation="vertical"
         app:behavior_hideable="true"
@@ -60,8 +60,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Setting"
-            android:background="@android:color/darker_gray"/>
+            android:text=""
+            android:background="#303030"/>
 
         <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:name="minimata.geosys.TypeFragment"

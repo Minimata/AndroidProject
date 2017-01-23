@@ -2,6 +2,11 @@ package minimata.geosys.dummy;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import minimata.geosys.model.Area;
 
 /**
  * Created by alexandre on 29.11.2016.
@@ -13,9 +18,11 @@ public class Alarms extends DummyContent {
 
     public Alarms(Bundle args){
         // Add some sample items.
-        int idCount = 0;
-        for (int i = 1; i <= 3; i++) {
-            addItem(createItem(idCount++, "An alarm"));
+        ArrayList<Area> areas = (ArrayList<Area>) args.get("areas");
+        if(areas != null) {
+            for(Area area : areas) {
+                addItem(createItem(area.getId(), "Alarm" + area.getId()));
+            }
         }
     }
 
