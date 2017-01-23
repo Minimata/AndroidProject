@@ -24,8 +24,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import minimata.geosys.models.Area;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,7 +61,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     private CircleOptions circleOptions = new CircleOptions();
     private Integer selectedRadius;
     private boolean editionMode = false;
-    private HashMap<Integer, HashMap<LatLng, Integer>> savedPositions = new HashMap<Integer, HashMap<LatLng, Integer>>();
+    private ArrayList<Area> areas = null;
 
     public GoogleMapFragment() {
         // Required empty public constructor
@@ -163,18 +166,18 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
     private void drawAllMarkers() {
         mMap.clear();
-        for (Map.Entry<Integer, HashMap<LatLng, Integer>> entry : savedPositions.entrySet()) {
-            LatLng position = new LatLng(0, 0);
-            Integer radius = 30;
-            for (Map.Entry<LatLng, Integer> entry2 : entry.getValue().entrySet()) {
-                position = entry2.getKey();
-                radius = entry2.getValue();
-            }
-            createNewCircleMarker(position, radius, "Alarm " + entry.getKey());
+
+        // Loop through each Areas
+        for (Area aera : areas) {
+            createNewCircleMarker(aera.getPosition(), aera.getRadius(), "Alarm " + aera.getId());
         }
+
+        // User position. Cyan marker.
         mMap.addMarker(userMarkerOptions.position(userPosition));
-        if(selectedPosition != null)
-            createNewCircleMarker(selectedPosition,selectedRadius,"You selected this...");
+
+        // Clicked position
+        if (selectedPosition != null)
+            createNewCircleMarker(selectedPosition, selectedRadius, "You selected this...");
     }
 
     private void createNewCircleMarker(LatLng position, int radius, String name) {
@@ -202,7 +205,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
     /*------------------------MATH UTILITY--------------------------------------------------------*/
     public double calculationByDistance(LatLng StartP, LatLng EndP) {
-        int Radius = 6371;//radius of earth in Km
+        int earthRadius = 6371;//radius of earth in Km
         double lat1 = StartP.latitude;
         double lat2 = EndP.latitude;
         double lon1 = StartP.longitude;
@@ -213,7 +216,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
                 Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
                         Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.asin(Math.sqrt(a));
-        double valueResult = Radius * c;
+        double valueResult = earthRadius * c;
         double km = valueResult / 1;
         DecimalFormat newFormat = new DecimalFormat("####");
         int kmInDec = Integer.valueOf(newFormat.format(km));
@@ -221,7 +224,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         int meterInDec = Integer.valueOf(newFormat.format(meter));
         Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec + " Meter   " + meterInDec);
 
-        return Radius * c;
+        return earthRadius * c;
     }
 
     /*------------------------UTILITY FOR EXTERNAL OBJECTS----------------------------------------*/
@@ -230,21 +233,11 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public int getNumberOfAlarms() {
-        return savedPositions.size();
+        return areas.size();
     }
 
-    public Map<Integer, HashMap<LatLng, Integer>> getPositions() {
-        return savedPositions;
-    }
-
-    public void setSavedPositions(int id, HashMap<LatLng, Integer> positionsToSet) {
-        HashMap<LatLng, Integer> area = new HashMap<LatLng, Integer>();
-        for (Map.Entry<LatLng, Integer> entry2 : positionsToSet.entrySet()) {
-            LatLng position = entry2.getKey();
-            int radius = entry2.getValue();
-            area.put(position, radius);
-        }
-        savedPositions.put(id, area);
+    public void setAreas(ArrayList<Area> areas) {
+        this.areas = areas;
     }
 
     public boolean IsEditionMode() {

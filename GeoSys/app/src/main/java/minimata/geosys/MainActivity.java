@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
@@ -21,15 +20,20 @@ import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.*;
-
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import minimata.geosys.dummy.Alarms;
 import minimata.geosys.dummy.DummyContent;
 import minimata.geosys.dummy.Settings;
 import minimata.geosys.dummy.Types;
+import minimata.geosys.models.Area;
 
 import static android.R.drawable.ic_delete;
 import static android.R.drawable.ic_input_add;
@@ -40,9 +44,15 @@ public class MainActivity extends AppCompatActivity implements
         TypeFragment.OnListFragmentInteractionListener,
         AlarmFragment.OnListFragmentInteractionListener {
 
-    private String filename = "saves";
+    private final static String SAVE_FILENAME = "/areas";
+    public static final String EXTRA_AREA = ":extra_area";
     private BottomSheetBehavior behavior;
-    private GoogleMapFragment gmapInstance;
+    private AlarmFragment alarmFragment;
+
+    // Retain every alarms integer-area pairs
+    private ArrayList<Area> areas;
+
+    private GoogleMapFragment mapFragment;
     private Thread checkAlarms;
     private static final String[] INITIAL_PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION
@@ -54,7 +64,9 @@ public class MainActivity extends AppCompatActivity implements
         requestPermissions(INITIAL_PERMS, 1);
         setContentView(R.layout.activity_main);
 
-        gmapInstance = ((GoogleMapFragment) getFragmentManager().findFragmentById(R.id.fragment_googlemap));
+        mapFragment = ((GoogleMapFragment) getFragmentManager().findFragmentById(R.id.fragment_googlemap));
+        alarmFragment = ((AlarmFragment)getFragmentManager().findFragmentById(R.id.fragment_alarms));
+
         if (savedInstanceState != null) {
             return;
         }
@@ -85,11 +97,11 @@ public class MainActivity extends AppCompatActivity implements
                         //reset settings
                         fab.setImageResource(ic_input_add);
                         //resetting gmap editionmode
-                        gmapInstance.activateEditionMode(false);
+                        mapFragment.activateEditionMode(false);
                         break;
 
                     case BottomSheetBehavior.STATE_COLLAPSED:
-                        gmapInstance.activateEditionMode(false);
+                        mapFragment.activateEditionMode(false);
                         fab.setImageResource(ic_delete);
                         break;
 
@@ -138,72 +150,64 @@ public class MainActivity extends AppCompatActivity implements
          * Setting up fragments
          */
         Bundle args = new Bundle(); // Just in case we need arguments in the future.
-        addFragment(new AlarmFragment(), args, R.id.fragment_alarms);
         addFragment(new TypeFragment(), args, R.id.fragment_type_settings);
 
         /**
          * loading in memory the previously saved alarms
          */
-        HashMap<Integer, HashMap<LatLng, Integer>> locations = (HashMap<Integer, HashMap<LatLng, Integer>>) ReadFromFile();
-        if(locations != null) {
-            for (Map.Entry<Integer, HashMap<LatLng, Integer>> entry : locations.entrySet()) {
-                int key = entry.getKey();
-                HashMap<LatLng, Integer> value = entry.getValue();
-                gmapInstance.setSavedPositions(key, value);
-            }
-        }
-
+        areas = readAreasFromFile();
+        newArea(30, new LatLng(46.957455, 6.868350));
+        mapFragment.setAreas(areas);
+        alarmFragment.setAreas(areas);
 
         /**
          * Setting up a thread to check every second if we enter an alarm radius
          */
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        Thread.sleep(1000); // Waits for 1 second (1000 milliseconds)
-                        HashMap<Integer, HashMap<LatLng, Integer>> locations = (HashMap<Integer, HashMap<LatLng, Integer>>) gmapInstance.getPositions();
-                        for (Map.Entry<Integer, HashMap<LatLng, Integer>> entry : locations.entrySet()) {
-                            Integer key = entry.getKey();
-                            HashMap<LatLng, Integer> value = entry.getValue();
-                            for(HashMap.Entry<LatLng,Integer> entry2 : value.entrySet()){
-                                LatLng position = entry2.getKey();
-                                double radius = entry2.getValue();
-                                if(gmapInstance.isUserInArea(position, radius)) {
-                                    setAlarm(key);
-                                }
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        checkAlarms = new Thread(myRunnable);
-        checkAlarms.start();
+//        Runnable myRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    while (!Thread.currentThread().isInterrupted()) {
+//                        Thread.sleep(1000); // Waits for 1 second (1000 milliseconds)
+//                        HashMap<Integer, HashMap<LatLng, Integer>> locations = (HashMap<Integer, HashMap<LatLng, Integer>>) mapFragment.getPositions();
+//                        for (Map.Entry<Integer, HashMap<LatLng, Integer>> entry : locations.entrySet()) {
+//                            Integer key = entry.getKey();
+//                            HashMap<LatLng, Integer> value = entry.getValue();
+//                            for (HashMap.Entry<LatLng, Integer> entry2 : value.entrySet()) {
+//                                LatLng position = entry2.getKey();
+//                                int radius = entry2.getValue();
+//                                if (mapFragment.isUserInArea(position, radius)) {
+//                                    setAlarm(key);
+//                                }
+//                            }
+//                        }
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//        checkAlarms = new Thread(myRunnable);
+//        checkAlarms.start();
     }
 
     @Override
     protected void onDestroy() {
-        SaveToFile(gmapInstance.getPositions());
-        checkAlarms.interrupt();
+        super.onDestroy();
+        saveAreasToFile(areas);
+//        checkAlarms.interrupt();
     }
 
     public void setAlarm(Integer name) {
         AlarmManager manager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(""+name), 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent("" + name), 0);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, System.currentTimeMillis() + 1000, pendingIntent);
     }
 
-    public void newAlarm(int radius, LatLng position) {
-        HashMap<LatLng, Integer> alarm = new HashMap<>();
-        int num = gmapInstance.getNumberOfAlarms();
-        alarm.put(position, radius);
-        gmapInstance.setSavedPositions(num, alarm);
-        SaveToFile(gmapInstance.getPositions());
+    public void newArea(int radius, LatLng position) {
+        Area area = new Area(areas.size(), position, radius);
+        areas.add(area);
+        saveAreasToFile(areas);
     }
 
     private void addFragment(Fragment fragment, Bundle args, int id) {
@@ -230,11 +234,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public GoogleMapFragment getGMapFragment() {
-        return gmapInstance;
+        return mapFragment;
     }
 
     /**
      * This will be called when a list fragment is pressed, as en event.
+     *
      * @param item the item clicked, polmorphed into a dummy.
      */
     @Override
@@ -246,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements
         if (item.getClass() == Alarms.AlarmItem.class) {
             //open settingsFragment to edit an already existing alarm
             Bundle args = new Bundle();
-            gmapInstance.activateEditionMode(true);
+            mapFragment.activateEditionMode(true);
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
@@ -257,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements
         if (item.getClass() == Types.TypeItem.class) {
             //open settings fragment to create a new alarm
             Bundle args = new Bundle();
-            gmapInstance.activateEditionMode(true);
+            mapFragment.activateEditionMode(true);
             replaceFragment(new SettingFragment(), args);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
@@ -266,7 +271,10 @@ public class MainActivity extends AppCompatActivity implements
          */
         if (item.getClass() == Settings.OKButton.class) {
             //creates an event depending of the type of setting (position, radius, tune, save button, etc)
-            newAlarm((Integer) item.data.keySet().toArray()[0], (LatLng) item.data.values().toArray()[0]);
+            Integer id = (Integer) item.data.keySet().toArray()[0];
+            LatLng latLng = (LatLng) item.data.values().toArray()[0];
+
+            newArea(id, latLng);
 
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Bundle args = new Bundle();
@@ -274,28 +282,61 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void SaveToFile(Map map) {
+    public ArrayList<Area> getAreas(){
+        return this.areas;
+    }
+
+    public void saveAreasToFile(ArrayList<Area> areas) {
+        String filename = getFilesDir() + SAVE_FILENAME;
         try {
             FileOutputStream fos = new FileOutputStream(filename);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(map);
+            oos.writeObject(areas);
             oos.flush();
             oos.close();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             e.printStackTrace();
         }
     }
 
-    public Map ReadFromFile() {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(filename);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            Map r = (Map) objectInputStream.readObject();
-            objectInputStream.close();
-            return r;
-        } catch (ClassNotFoundException | IOException | ClassCastException e) {
+    @SuppressWarnings("unchecked")
+    public ArrayList<Area> readAreasFromFile() {
+        String filename = getFilesDir() + SAVE_FILENAME;
+        ArrayList<Area> outputAreas = null;
+
+        try{
+            FileInputStream fis = new FileInputStream(filename);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            outputAreas = (ArrayList<Area>) ois.readObject();
+            ois.close();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            return null;
         }
+
+        // If file has not been yet created
+        if(outputAreas == null) outputAreas = new ArrayList<>();
+
+        Log.d("YOLO", "READED");
+        Log.d("YOLO", outputAreas.toString());
+
+        return outputAreas;
+    }
+
+    public void editArea(int areaId) {
+        mapFragment.activateEditionMode(true);
+        Bundle bundle = new Bundle();
+        bundle.putInt(MainActivity.EXTRA_AREA, areaId);
+        replaceFragment(new SettingFragment(), bundle);
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    public void updateCurrentAreaRadius(int radius) {
+        mapFragment.updateRadius(radius);
+    }
+
+    public void confirmArea(int id, int radius) {
+        areas.get(id).setRadius(radius);
+        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        replaceFragment(new TypeFragment(), new Bundle());
     }
 }

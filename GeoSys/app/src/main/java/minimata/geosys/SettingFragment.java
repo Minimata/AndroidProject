@@ -3,16 +3,15 @@ package minimata.geosys;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import minimata.geosys.dummy.DummyContent;
-import minimata.geosys.dummy.Settings;
+import minimata.geosys.models.Area;
 
 /**
  * A fragment representing a list of Items.
@@ -28,6 +27,11 @@ public class SettingFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
+    private Area area;
+
+    private MainActivity parent;
+    private TextView tvRadius;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -35,19 +39,13 @@ public class SettingFragment extends Fragment {
     public SettingFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static SettingFragment newInstance(int columnCount) {
-        SettingFragment fragment = new SettingFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        int areaId = getArguments().getInt(MainActivity.EXTRA_AREA);
+        this.parent = ((MainActivity) getActivity());
+        this.area = parent.getAreas().get(areaId);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -57,20 +55,39 @@ public class SettingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_setting_list, container, false);
-        Settings setting = new Settings(this.getArguments(), this.getActivity());
+        View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        final SeekBar seekBar = (SeekBar) view.findViewById(R.id.setting_seekbar);
+        Button buttonOk = (Button) view.findViewById(R.id.setting_confirm);
+        tvRadius = (TextView) view.findViewById(R.id.setting_textview_radius);
+        tvRadius.setText("Radius(" + area.getRadius() + ") : ");
+
+        buttonOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parent.confirmArea(area.getId(), seekBar.getProgress());
             }
-            recyclerView.setAdapter(new MySettingRecyclerViewAdapter(setting.ITEMS, mListener));
-        }
+        });
+
+        seekBar.setProgress(area.getRadius());
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                parent.updateCurrentAreaRadius(progress);
+                tvRadius.setText("Radius(" + progress + ") : ");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         return view;
     }
 

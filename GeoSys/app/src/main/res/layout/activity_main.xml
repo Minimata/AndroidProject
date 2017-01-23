@@ -36,7 +36,7 @@
                 android:layout_weight="1"
                 android:background="@android:color/holo_green_dark">
 
-                <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                     android:name="minimata.geosys.AlarmFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
