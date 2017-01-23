@@ -12,6 +12,7 @@ import java.util.List;
 
 import minimata.geosys.GoogleMapFragment;
 import minimata.geosys.MainActivity;
+import minimata.geosys.model.Area;
 
 /**
  * Created by alexandre on 29.11.2016.
@@ -21,7 +22,6 @@ import minimata.geosys.MainActivity;
 
 public class Settings extends DummyContent{
     public final List<Setting> ITEMS = new ArrayList<Setting>();
-    private final String TAG = "settings object";
     private Context context;
     private MainActivity main;
     private GoogleMapFragment gmap;
@@ -66,7 +66,6 @@ public class Settings extends DummyContent{
             seekBar.setMinimumWidth(100);
             seekBar.setProgress(0);
             seekBar.setMax(200);
-            data.put(0, 0);
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -127,7 +126,7 @@ public class Settings extends DummyContent{
                         for (Setting widget : widgets){
                             //check if it's not the Ok Button
                             if(widget.id != widgets.size()-1)
-                                data.put(widget.getValue(),gmap.getSelectedPosition());
+                                data.add(0, new Area(gmap.getNumberOfAlarms(), gmap.getSelectedPosition(), widget.getValue()));
                         }
                     }
                     return false;

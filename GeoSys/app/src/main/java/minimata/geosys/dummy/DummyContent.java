@@ -31,12 +31,12 @@ public class DummyContent {
     public class DummyItem {
         public int id;
         public String content;
-        public HashMap<Integer, Object> data;
+        public ArrayList<Object> data;
 
         public DummyItem(int id, String content) {
             this.id = id;
             this.content = content;
-            data = new HashMap<>();
+            data = new ArrayList<>();
         }
     }
 }
