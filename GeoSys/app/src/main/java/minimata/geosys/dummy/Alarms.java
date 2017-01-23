@@ -31,7 +31,7 @@ public class Alarms extends DummyContent {
     }
 
     public class AlarmItem extends DummyItem {
-        public AlarmItem(int id, String content){
+        public AlarmItem(int id, String content) {
             super(id, content);
         }
     }

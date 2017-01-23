@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
                 Bundle args = new Bundle();
-                replaceFragment(new TypeFragment(), args);
+                replaceFragment(new TypeFragment(), args, R.id.fragment_type_settings);
                 switch (behavior.getState()) {
                     case BottomSheetBehavior.STATE_EXPANDED:
                         //delete settings
@@ -204,8 +204,8 @@ public class MainActivity extends AppCompatActivity implements
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, System.currentTimeMillis() + 1000, pendingIntent);
     }
 
-    public void newAlarm(int radius, LatLng position) {
-        gmapInstance.addArea(radius, position);
+    public void newAlarm(Area area) {
+        gmapInstance.addArea(area.getRadius(), area.getPosition());
         saveAreasToFile(gmapInstance.getAreas());
     }
 
@@ -217,11 +217,11 @@ public class MainActivity extends AppCompatActivity implements
         transaction.commit();
     }
 
-    private void replaceFragment(Fragment fragment, Bundle args) {
+    private void replaceFragment(Fragment fragment, Bundle args, int id) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         fragment.setArguments(args);
-        transaction.replace(R.id.fragment_type_settings, fragment); // f2_container is your FrameLayout container
+        transaction.replace(id, fragment);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
     }
@@ -248,10 +248,7 @@ public class MainActivity extends AppCompatActivity implements
          */
         if (item.getClass() == Alarms.AlarmItem.class) {
             //open settingsFragment to edit an already existing alarm
-            Bundle args = new Bundle();
-            gmapInstance.activateEditionMode(true);
-            replaceFragment(new SettingFragment(), args);
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            editArea(item.id);
         }
         /**
          * If we click a type of setting to configure.
@@ -261,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements
             //open settings fragment to create a new alarm
             Bundle args = new Bundle();
             gmapInstance.activateEditionMode(true);
-            replaceFragment(new SettingFragment(), args);
+            replaceFragment(new SettingFragment(), args, R.id.fragment_type_settings);
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         /**
@@ -269,11 +266,13 @@ public class MainActivity extends AppCompatActivity implements
          */
         if (item.getClass() == Settings.OKButton.class) {
             //creates an event depending of the type of setting (position, radius, tune, save button, etc)
-            newAlarm((Integer) item.data.keySet().toArray()[0], (LatLng) item.data.values().toArray()[0]);
-
+            newAlarm((Area) item.data.get(0));
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             Bundle args = new Bundle();
-            replaceFragment(new TypeFragment(), args);
+            args.putSerializable("areas", gmapInstance.getAreas());
+            replaceFragment(new AlarmFragment(), args, R.id.fragment_alarms);
+
+            replaceFragment(new TypeFragment(), new Bundle(), R.id.fragment_type_settings);
         }
     }
 
@@ -314,17 +313,7 @@ public class MainActivity extends AppCompatActivity implements
         gmapInstance.activateEditionMode(true);
         Bundle bundle = new Bundle();
         bundle.putInt(MainActivity.EXTRA_AREA, areaId);
-        replaceFragment(new SettingFragment(), bundle);
+        replaceFragment(new SettingFragment(), bundle, R.id.fragment_type_settings);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-
-    public void updateCurrentAreaRadius(int radius) {
-        gmapInstance.updateRadius(radius);
-    }
-
-    public void confirmArea(int id, int radius) {
-        gmapInstance.getAreas().get(id).setRadius(radius);
-        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        replaceFragment(new TypeFragment(), new Bundle());
     }
 }
