@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final String EXTRA_AREA = ":extra_area";
     private BottomSheetBehavior behavior;
     private AlarmFragment alarmFragment;
+    private View bottomSheet;
 
     // Retain every alarms integer-area pairs
     private ArrayList<Area> areas;
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements
         //New alarm button
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //Alarm selection bottom sheet
-        View bottomSheet = findViewById(R.id.bottom_sheet);
+        bottomSheet = findViewById(R.id.bottom_sheet);
         //Bottom sheet behaviour
         behavior = BottomSheetBehavior.from(bottomSheet);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -84,10 +86,7 @@ public class MainActivity extends AppCompatActivity implements
          * It's not a good practice, but the xml and bottom sheet doesn't allow get along well
          * if we don't wnat the bottom sheet to come up all the way to the top of the screen.
          */
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int height = metrics.heightPixels;
-        bottomSheet.getLayoutParams().height = height / 2;
+        setBottomSheetHeight();
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -189,6 +188,19 @@ public class MainActivity extends AppCompatActivity implements
 //        };
 //        checkAlarms = new Thread(myRunnable);
 //        checkAlarms.start();
+    }
+
+    private void setBottomSheetHeight() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int height = metrics.heightPixels;
+        bottomSheet.getLayoutParams().height = height / 2;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setBottomSheetHeight();
     }
 
     @Override
@@ -315,9 +327,6 @@ public class MainActivity extends AppCompatActivity implements
 
         // If file has not been yet created
         if(outputAreas == null) outputAreas = new ArrayList<>();
-
-        Log.d("YOLO", "READED");
-        Log.d("YOLO", outputAreas.toString());
 
         return outputAreas;
     }
